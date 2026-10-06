@@ -476,7 +476,7 @@ L24D7:
 .else
 L24DB:
         iny
-        lda     MATHTBL+28+1,y
+        lda     MATHTBL+MT_RELOPS+2,y
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
 .endif

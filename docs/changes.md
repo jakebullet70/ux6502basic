@@ -346,3 +346,22 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 101 bytes, plus 7 in `FRM_ELEMENT` and the 4-byte keyword.
 - Test: `tests/rpt.bas` (both forms, empty results, the 255 limit, errors, and a loop that forces
   garbage collection).
+
+## MOD
+
+- `CONFIG_MOD` (sim only). Code in `mod.s`, included from `extra.s`. `a MOD b` works as in
+  QBasic: both operands are rounded to the nearest integer (halves away from zero, so
+  `2.5 MOD 2` is 1), the result has the sign of `a` (`-7 MOD 3` is -1), and it has the same
+  precedence as `*` and `/`. An operand of 2^31 or more in size gives OVERFLOW, and a right
+  operand that rounds to 0 gives DIVISION BY ZERO.
+- The keyword sits after `OR`, inside the binary operator range `TOKEN_PLUS`..`TOKEN_GREATER`,
+  with a `MATHTBL` entry after `OR` (precedence $7B). This moves the tokens of `>`, `=`, `<` and
+  every function up by 1. The hard-coded `MATHTBL` offsets became symbols so they follow the
+  table: `adc #$07` in `FRMEVL` is `TOKEN_GREATER-TOKEN_PLUS`, the `ldy #$15/$18/$1B` loads in
+  `eval.s` are `MT_NEGOP`, `MT_EQUOP` and `MT_RELOPS` (defined in `token.s`), and
+  `MATHTBL+28+1` in the tokenizer is `MATHTBL+MT_RELOPS+2`. The CBM builds are unchanged.
+- The remainder comes from a 32-bit shift-and-subtract division on the integer magnitudes
+  (`QINT` after adding 0.5), so it is exact for every allowed operand, unlike `a-b*INT(a/b)`
+  in floating point.
+- Size: 154 bytes, plus the 3-byte table entry and the 3-byte keyword.
+- Test: `tests/mod.bas` (signs, rounding, precedence, the 2^31 limit, errors).

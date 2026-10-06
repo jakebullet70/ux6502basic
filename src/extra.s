@@ -28,6 +28,10 @@
 .include "rpt.s"
 .endif
 
+.ifdef CONFIG_MOD
+.include "mod.s"
+.endif
+
 .ifdef CONFIG_GOTO_CACHE
 .include "gotocache.s"
 .endif

@@ -105,6 +105,9 @@
 .endif
 		keyword	"AND"
 		keyword	"OR"
+.ifdef CONFIG_MOD
+		keyword	"MOD", TOKEN_MOD
+.endif
 		keyword	">", TOKEN_GREATER
 		keyword	"=", TOKEN_EQUAL
 		keyword	"<"
@@ -174,6 +177,11 @@ UNFNC_ATN:
 		.byte   0
 
         .segment "VECTORS"
+; MATHTBL HAS ONE ENTRY PER BINARY OPERATOR TOKEN (TOKEN_PLUS UP TO
+; TOKEN_GREATER), THEN UNARY MINUS, NOT AND THE RELATIONAL OPERATORS.
+MT_NEGOP = (TOKEN_GREATER-TOKEN_PLUS)*3
+MT_EQUOP = MT_NEGOP+3
+MT_RELOPS = MT_NEGOP+6
 MATHTBL:
         .byte   $79
         .word   FADDT-1
@@ -189,6 +197,10 @@ MATHTBL:
         .word   TAND-1
         .byte   $46
         .word   OR-1
+.ifdef CONFIG_MOD
+        .byte   $7B
+        .word   MODT-1
+.endif
         .byte   $7D
         .word   NEGOP-1
         .byte   $5A

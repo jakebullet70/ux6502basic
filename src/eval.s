@@ -160,7 +160,7 @@ L2C81:
         ldx     CPRTYP
         bne     FRM_RELATIONAL
         bcs     L2D02
-        adc     #$07
+        adc     #TOKEN_GREATER-TOKEN_PLUS
         bcc     L2D02
         adc     VALTYP
         bne     L2C92
@@ -199,7 +199,7 @@ FRM_RELATIONAL:
         dec     TXTPTR+1
 L2CBB:
         dec     TXTPTR
-        ldy     #$1B
+        ldy     #MT_RELOPS
         sta     CPRTYP
         bne     FRM_PRECEDENCE_TEST
 PREFNC:
@@ -378,7 +378,7 @@ L2D57:
 NOT_:
         cmp     #TOKEN_NOT
         bne     L2D74
-        ldy     #$18
+        ldy     #MT_EQUOP
         bne     EQUL
 
 ; ----------------------------------------------------------------------------
@@ -453,7 +453,7 @@ SYNERR:
         jmp     ERROR
 ; ----------------------------------------------------------------------------
 MIN:
-        ldy     #$15
+        ldy     #MT_NEGOP
 EQUL:
         pla
         pla
