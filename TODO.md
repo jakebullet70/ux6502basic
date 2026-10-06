@@ -6,7 +6,9 @@ in `docs/changes.md` and gets a test in `tests/`.
 ## 1. New functions and literals
 
 HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary). Then the `XOR`, `SHL` and
-`SHR` operators (bitwise, on integers like `AND` and `OR`).
+`SHR` operators (bitwise, on integers like `AND` and `OR`). Then `DEEK(addr)` and
+`DOKE addr,value` (16-bit PEEK and POKE), `MEMCPY` and `MEMSET` (block copy and fill), and
+`LCASE$` and `UCASE$`.
 
 ## 2. Labels, SUB and FUNCTION
 
