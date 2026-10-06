@@ -1281,6 +1281,10 @@ FIN8:
         sec
         sbc     INDX
         sta     EXPON
+.ifdef CONFIG_FAST_FIN
+        jsr     FIN_FLOAT
+        lda     EXPON
+.endif
         beq     L3BEE
         bpl     L3BE7
 L3BDE:
@@ -1308,6 +1312,18 @@ FIN9:
         bpl     L3BFD
         inc     INDX
 L3BFD:
+.ifdef CONFIG_FAST_FIN
+; While FAC (exponent) is 0, FAC+1..FAC_LAST hold the digits read so far as
+; an unsigned integer: FAC = FAC*10 + digit. FIN_FLOAT turns it into a float
+; once, at the end or before the integer could overflow.
+        lda     FAC
+        bne     FIN_SLOW
+        lda     FAC+1
+        cmp     #$19            ; >= $19000000 could pass 32 bits after *10
+        bcc     FIN_INT
+        jsr     FIN_FLOAT
+FIN_SLOW:
+.endif
         jsr     MUL10
         pla
         sec
@@ -1364,6 +1380,62 @@ L3C2C:
 L3C3A:
         sta     EXPON
         jmp     FIN4
+
+.ifdef CONFIG_FAST_FIN
+FIN_INT:
+        lda     FAC+1           ; integer still 0: just add the digit
+        ora     FAC+2
+        ora     FAC+3
+.ifndef CONFIG_SMALL
+        ora     FAC+4
+.endif
+        beq     @digit
+.repeat MANTISSA_BYTES, I       ; ARG = FAC
+        lda     FAC+1+I
+        sta     ARG+1+I
+.endrepeat
+        jsr     FIN_SHL         ; FAC*4
+        jsr     FIN_SHL
+        clc                     ; + ARG = FAC*5
+.repeat MANTISSA_BYTES, I
+        lda     FAC_LAST-I
+        adc     ARG_LAST-I
+        sta     FAC_LAST-I
+.endrepeat
+        jsr     FIN_SHL         ; FAC*10
+@digit:
+        pla                     ; + digit
+        and     #$0F
+        clc
+        adc     FAC_LAST
+        sta     FAC_LAST
+        bcc     @done
+        ldx     #MANTISSA_BYTES-1
+@carry:
+        inc     FAC,x
+        bne     @done
+        dex
+        bne     @carry
+@done:
+        jmp     FIN1
+
+FIN_SHL:
+        asl     FAC_LAST
+.repeat MANTISSA_BYTES-1, I
+        rol     FAC_LAST-1-I
+.endrepeat
+        rts
+
+; Float the integer in FAC+1..FAC_LAST; nothing to do if FAC is already a float.
+FIN_FLOAT:
+        lda     FAC
+        bne     @done
+        ldx     #128+8*MANTISSA_BYTES
+        sec                     ; positive; FIN applies the sign at the end
+        jmp     LDB21
+@done:
+        rts
+.endif
 
 ; ----------------------------------------------------------------------------
 .ifdef CONFIG_SMALL

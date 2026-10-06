@@ -232,3 +232,19 @@ W65C816SXB) are not ours to support and only slowed every build and check.
 - The `.ifdef APPLE`, `.ifdef KIM` and similar code inside the shared sources stays. It assembles
   to nothing, and stripping it by hand risks breaking the verified builds.
 - Size: no change. The sim build is still 9779 bytes; only the source tree is smaller.
+
+## Faster number reading (FIN)
+
+`tests/bench.py` showed that numeric literals were the most expensive part of a statement:
+`A=12345` took about 5900 cycles against 1100 for `A=B`. FIN did a float multiply by 10 and a
+float add for every digit, each time the line ran. VAL, INPUT and READ use the same routine.
+
+- `CONFIG_FAST_FIN` (`float.s`, sim only): while FAC (the exponent byte) is 0, the digits go into
+  FAC+1..FAC_LAST as an unsigned integer, multiplied by 10 with shifts and one add. `FIN_FLOAT`
+  normalizes it into a float once, before the exponent is applied, or earlier if the next digit
+  could overflow the integer (high byte $19 or more). From then on the old float code runs.
+- Results are bit for bit the same as before: the integer is exact, and the float path also gives
+  exact values for integers that fit the mantissa. Checked on 331 literals and their VAL forms.
+- Cycles per statement: `A=1` 1525 to 1376, `A=12345` 5883 to 2220, `POKE 1000,1` 6019 to 3696.
+- Size: about 120 bytes.
+- Test: `tests/numbers.bas`.
