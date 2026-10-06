@@ -8,7 +8,10 @@ in `docs/changes.md` and gets a test in `tests/`.
 HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary). Then the `XOR`, `SHL` and
 `SHR` operators (bitwise, on integers like `AND` and `OR`). Then `DEEK(addr)` and
 `DOKE addr,value` (16-bit PEEK and POKE), `MEMCPY` and `MEMSET` (block copy and fill), and
-`LCASE$` and `UCASE$`.
+`LCASE$` and `UCASE$`. Then `CHARAT` and `TEXTAT` from XC-BASIC: `CHARAT x, y, code[, color]`
+puts one character and `TEXTAT x, y, text[, color]` prints text at column x, row y, without
+moving the cursor. They need the screen layout (or a cursor call) from the new kernal; the sim
+build has no screen, so its version and test are still open.
 
 ## 2. Labels, SUB and FUNCTION
 
