@@ -597,6 +597,9 @@ CLEAR:
         bne     L256A
 .endif
 CLEARC:
+.ifdef CONFIG_GOTO_CACHE
+        jsr     GC_CLEAR
+.endif
 .ifdef KBD
         lda     #<CONST_MEMSIZ
         ldy     #>CONST_MEMSIZ

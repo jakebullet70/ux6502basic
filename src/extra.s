@@ -19,3 +19,7 @@
 .ifdef CONFIG_INSTR
 .include "instr.s"
 .endif
+
+.ifdef CONFIG_GOTO_CACHE
+.include "gotocache.s"
+.endif

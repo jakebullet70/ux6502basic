@@ -41,6 +41,10 @@ L27E9:
 ; ALSO USED BY "RUN" AND "GOSUB"
 ; ----------------------------------------------------------------------------
 GOTO:
+.ifdef CONFIG_GOTO_CACHE
+        jmp     GOTO_CACHED
+GOTO_SLOW:
+.endif
         jsr     LINGET
         jsr     REMN
         lda     CURLIN+1

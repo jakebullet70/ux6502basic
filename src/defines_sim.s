@@ -14,6 +14,7 @@ CONFIG_NO_LET := 1 ; no LET keyword (A=1 still works); keeps the keyword table s
 CONFIG_KW16 := 1 ; tokenizer and LIST walk the keyword table with KW_PTR (any length)
 CONFIG_FAST_FIN := 1 ; FIN reads digits as an integer and floats it once
 CONFIG_INSTR := 1 ; INSTR([start,] a$, b$) function
+CONFIG_GOTO_CACHE := 1 ; cache GOTO/GOSUB targets (gotocache.s)
 
 ; zero page
 ZP_START1 := $00

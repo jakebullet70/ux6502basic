@@ -263,3 +263,28 @@ float add for every digit, each time the line ran. VAL, INPUT and READ use the s
   not drop. The search reads the text after the release; nothing allocates in between.
 - Size: 167 bytes.
 - Test: `tests/instr.bas`.
+
+## GOTO target cache
+
+GOTO and GOSUB used to search the line list for the target on every jump. Now the result is
+remembered, so a repeated jump costs the same however far away the target line is.
+
+- `CONFIG_GOTO_CACHE` (sim only). Code in `gotocache.s`, included from `extra.s`. `GOTO` in
+  `flow2.s` jumps to `GOTO_CACHED`; the old code stays as `GOTO_SLOW`. GOSUB, `IF ... THEN
+  <line>`, `IF ... GOTO`, ON GOTO/GOSUB and `RUN <line>` all go through `GOTO`, so they all use
+  the cache.
+- Key: TXTPTR at entry, which points at the first digit of the line number. In a stored program
+  that address always leads to the same target. Value: the TXTPTR that `GOTO_SLOW` leaves.
+- Direct-mapped, 64 entries; the entry is the key's low byte AND 63. Four 64-byte tables
+  (256 bytes) in the `IORAM` segment. An entry whose key high byte is 0 is empty.
+- Direct-mode lines are not cached, because the input buffer is reused.
+- `CLEARC` (in `program.s`) empties the cache. It runs on NEW, RUN, CLR and after every program
+  line is typed, so the cache never points at old text. A future LOAD must also reach `CLEARC`
+  (the CBM LOAD does, through `SETPTRS`). A POKE into the program text is not noticed.
+- On a miss, `CHRGOT` is called again before `GOTO_SLOW`, because `LINGET` needs the carry flag
+  of the first digit and the cache lookup clobbers it.
+- Speed (`tests/bench.py`): GOSUB to the next line 1382 to 732 cycles, GOSUB 100 lines on 6900 to
+  751 cycles.
+- Size: 91 bytes of code plus the 256-byte tables.
+- Test: `tests/gotocache.bas` (changed and deleted target lines, inserted lines, ON GOTO/GOSUB,
+  IF GOTO, RUN <line>, direct mode, and two GOTOs that share a cache entry).
