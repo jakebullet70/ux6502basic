@@ -9,6 +9,7 @@ CONFIG_2C := 1
 CONFIG_SCRTCH_ORDER := 2
 CONFIG_FILE := 1 ; PRINT#, INPUT#, GET#, CMD, OPEN, CLOSE, SYS
 CONFIG_HANDLE_IO := 1 ; files and console through handles (handle_io.s)
+CONFIG_BLOCK := 1 ; block IF/ELSE/END IF (block.s); needs CONFIG_HANDLE_IO
 
 ; zero page
 ZP_START1 := $00
@@ -21,6 +22,9 @@ USR              := $000A
 SIM_CSP          := $00F0 ; cc65 C stack pointer used by sim65 paravirt calls
 CURDVC           := $00F2 ; current logical file, 0 = console
 Z96              := $00F3 ; ST, status of the last file read
+BLK_DEPTH        := $00F4 ; block.s scan: nesting depth
+BLK_LAST         := $00F5 ; block.s scan: last token on the line
+BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE or 0
 
 ; constants
 STACK_TOP        := $FA ; as CBM2: $01FD-$01FF are in front of INPUTBUFFER

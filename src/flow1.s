@@ -167,6 +167,7 @@ EXECUTE_STATEMENT1:
         pha
         lda     TOKEN_ADDRESS_TABLE,y
         pha
+EXEC_CHRGET:
         jmp     CHRGET
 
 .ifdef CONFIG_11
@@ -218,6 +219,11 @@ STOP:
 ; "END" STATEMENT
 ; ----------------------------------------------------------------------------
 END:
+.ifdef CONFIG_BLOCK
+        cmp     #TOKEN_IF	; END IF closes a block and does nothing
+        beq     EXEC_CHRGET
+        jsr     CHRGOT		; Z again: end of statement
+.endif
         clc
 END2:
         bne     RET1

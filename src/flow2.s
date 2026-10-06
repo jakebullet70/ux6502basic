@@ -169,6 +169,13 @@ IF:
         beq     L2884
         lda     #TOKEN_THEN
         jsr     SYNCHR
+.ifdef CONFIG_BLOCK
+        tax			; nothing after THEN: block IF
+        bne     L2884
+        lda     FAC
+        bne     L288D		; true: go on with the next line
+        jmp     BLK_FALSE
+.endif
 L2884:
         lda     FAC
         bne     L288D

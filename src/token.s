@@ -1,6 +1,6 @@
 		init_token_tables
 
-		keyword_rts "END", END
+		keyword_rts "END", END, TOKEN_END
 		keyword_rts "FOR", FOR
 		keyword_rts "NEXT", NEXT
 		keyword_rts "DATA", DATA
@@ -17,7 +17,7 @@
 .endif
 		keyword_rts "GOTO", GOTO, TOKEN_GOTO
 		keyword_rts "RUN", RUN
-		keyword_rts "IF", IF
+		keyword_rts "IF", IF, TOKEN_IF
 		keyword_rts "RESTORE", RESTORE
 		keyword_rts "GOSUB", GOSUB, TOKEN_GOSUB
 		keyword_rts "RETURN", POP
@@ -78,6 +78,9 @@
 		keyword_rts "PRT", PRT
 .endif
 		keyword_rts "NEW", NEW
+.ifdef CONFIG_BLOCK
+		keyword_rts "ELSE", ELSE, TOKEN_ELSE
+.endif
 
 		count_tokens
 

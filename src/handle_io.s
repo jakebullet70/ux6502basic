@@ -107,8 +107,9 @@ HIO_FREE:
         rts
 
 ; ----------------------------------------------------------------------------
-; I/O errors. The main error table is full (its offsets are 8 bits), so
-; these messages have their own table; HIO_ERROR prints like ERROR does.
+; I/O errors (and the block errors of block.s). The main error table is full
+; (its offsets are 8 bits), so these messages have their own table;
+; HIO_ERROR prints like ERROR does.
 ; ----------------------------------------------------------------------------
 HIO_NOTOPEN:
         ldx     #HIO_ERR_NOTOPEN
@@ -343,3 +344,7 @@ HIO_ERR_NOTOUT = *-HIO_ERRORS
         htasc   "NOT OUTPUT FILE"
 HIO_ERR_TOOMANY = *-HIO_ERRORS
         htasc   "TOO MANY FILES"
+.ifdef CONFIG_BLOCK
+HIO_ERR_ENDIF = *-HIO_ERRORS
+        htasc   "MISSING END IF"
+.endif

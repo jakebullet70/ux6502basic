@@ -37,6 +37,7 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   Files work: `OPEN lf,"name"[,mode]` (0 read, 1 write, 2 append), CLOSE, PRINT#, INPUT#, GET#,
   CMD, SYS and ST, through `handle_io.s` (see below). Typed lines are cut at 80 characters
   (buffer at $0200, `LINE_MAX`); BS and DEL delete.
+  Block `IF c THEN` / `ELSE` / `END IF` (`block.s`, `CONFIG_BLOCK`).
 - I/O layer: the interpreter reaches files only through `IO_CHKIN`, `IO_CHKOUT`, `IO_CLRCH`,
   `IO_CHRIN`, `IO_CLALL`, plus `MONCOUT`, `MONRDKEY`, `ISCNTC`. `io.s` holds the register rules and
   the CBM KERNAL mapping. `handle_io.s` implements them for Unix-style handles on top of the

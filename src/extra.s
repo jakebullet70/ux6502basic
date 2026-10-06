@@ -39,3 +39,7 @@
 .ifdef CONFIG_HANDLE_IO
 .include "handle_io.s"
 .endif
+
+.ifdef CONFIG_BLOCK
+.include "block.s"
+.endif

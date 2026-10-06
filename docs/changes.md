@@ -141,3 +141,37 @@ and the buffer was in zero page. The X16 screen is 80 characters wide.
   which returns the buffer pointer for a buffer outside zero page.
 - Test: `tests/linein.bas` (80-character program line, INPUT and direct lines cut at 80, BS, STOP
   and CONT, strings in direct mode).
+
+## Block IF / ELSE / END IF
+
+msbasic has only the one-line IF. `CONFIG_BLOCK` (set in `defines_sim.s`) adds a block form:
+
+```
+IF c THEN
+  ...
+ELSE
+  ...
+END IF
+```
+
+- `IF c THEN` with nothing after THEN on the line starts a block. A false condition skips to the
+  matching ELSE or END IF; ELSE, reached after the true part, skips to the matching END IF.
+  Statements after ELSE on its line run, so `ELSE IF c THEN` chains blocks (each needs its own
+  END IF) and `ELSE 100` jumps like `THEN 100`. Blocks push nothing on the stack, so GOTO in or
+  out of a block is harmless.
+- New file `block.s`: the ELSE statement and the forward scan. The scan reads the tokenized text:
+  a line whose last token (spaces skipped) is THEN opens a block, END followed by IF closes one,
+  text in quotes and after REM is skipped. It keeps `CURLIN` up to date line by line. If the
+  program ends first: `?MISSING END IF ERROR`, in the extra error table of `handle_io.s` (so
+  `CONFIG_BLOCK` needs `CONFIG_HANDLE_IO`). Zero page: `BLK_DEPTH`, `BLK_LAST`, `BLK_MODE` at
+  $F4-$F6.
+- `token.s`: new statement token ELSE after NEW (our own token values; programs are text, so
+  token numbers need not match other BASICs). `TOKEN_END` and `TOKEN_IF` are now named.
+- `flow2.s` (`IF`): after THEN, end of line means a block; a false block calls `BLK_FALSE`.
+- `flow1.s` (`END`): END followed by IF is END IF and does nothing. A `jsr CHRGOT` restores the Z
+  flag that the rest of END tests (end of statement), which the compare destroys. The label
+  `EXEC_CHRGET` marks the `jmp CHRGET` that END IF branches to.
+- No new token for END IF: the tokenizer already makes END + IF; `ENDIF` works too.
+- Pitfall: keywords are found inside names, so a variable such as `ELSEX` no longer works.
+- Size: 159 bytes in the sim build.
+- Test: `tests/block.bas`.
