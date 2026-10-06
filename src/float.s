@@ -1197,6 +1197,9 @@ L3B6F:
         dex
         bpl     L3B6F
         bcc     FIN2
+.ifdef CONFIG_RADIX_LIT
+        jsr     LIT_FIN
+.endif
 .ifdef SYM1
         cmp     #$26
         bne     LDABB

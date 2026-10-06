@@ -379,3 +379,25 @@ late cost more than one made early. Now the address of each variable's entry is 
   next start. The option also compares the high byte. Cost: 8 bytes.
 - No dedicated test: the failure needs a particular code layout. `tests/data.bas` and
   `tests/files.bas` showed it.
+
+## Hex and binary literals
+
+- `CONFIG_RADIX_LIT` (sim only, needs `CONFIG_FAST_FIN`). Code in `radixlit.s`, included from
+  `extra.s`. `$FF` is a hex number and `%1010` a binary number. Hex digits may be lowercase.
+  Values are unsigned and may use up to 32 bits (`$FFFFFFFF` is 4294967295); more gives
+  OVERFLOW. Leading zeros are allowed. A prefix with no digits gives 0, as `.` does.
+- `FIN` calls `LIT_FIN` when the first character is not a digit, so the literals work in
+  program text, `VAL`, `INPUT` and `DATA`. `LIT_FIN` shifts the digits into FAC+1..4 (cleared
+  by `FIN`) and floats the result with `FIN_FLOAT`. A sign is not read before the prefix, so
+  `VAL("-$10")` is 0; in an expression `-$10` is -16 through the unary minus. `FIN` skips
+  spaces between digits, as it does for decimal numbers.
+- `FRM_ELEMENT` sends `$` and `%` to `FIN`, like a digit or `.`.
+- Tokenizer: without help, `$DEF` would become `$`, the `DEF` token. `PARSE_INPUT_LINE` calls
+  `LIT_TOKEN` for each `$`. After a letter or digit the `$` is a type suffix (`A$`, `B1$`) and
+  tokenizing goes on as before. Otherwise the `$` and the hex digits after it are stored
+  untokenized and in uppercase. A literal must be followed by a space or a non-hex character
+  before a keyword: `$FFAND1` reads `$FFA` then `ND1`. `%` needs no help, since 0 and 1 never
+  start a keyword.
+- Size: 127 bytes, plus 9 in the tokenizer, 3 in `FIN` and 8 in `FRM_ELEMENT`.
+- Test: `tests/radixlit.bas` (values, limits, lowercase, `$DEF`, `VAL`, `DATA`, `INPUT`, the
+  `$` suffix on string variables, `LIST`).

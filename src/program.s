@@ -376,6 +376,13 @@ LC49E:
         jsr     SIM_UPPER
         sta     INPUTBUFFERX,x
 .endif
+.ifdef CONFIG_RADIX_LIT
+        cmp     #'$'
+        bne     L2480
+        jsr     LIT_TOKEN
+        bcs     L246C
+L2480:
+.endif
         cmp     #$3F
         bne     L2484
         lda     #TOKEN_PRINT

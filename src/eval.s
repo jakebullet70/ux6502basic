@@ -348,6 +348,12 @@ LCDC1:
 .endif
         cmp     #$2E
         beq     L2D36
+.ifdef CONFIG_RADIX_LIT
+        cmp     #'$'
+        beq     L2D36
+        cmp     #'%'
+        beq     L2D36
+.endif
         cmp     #TOKEN_MINUS
         beq     MIN
         cmp     #TOKEN_PLUS
