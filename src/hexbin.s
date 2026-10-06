@@ -1,7 +1,8 @@
 ; HEX$ and BIN$ functions (CONFIG_HEXBIN).
 
 ; ----------------------------------------------------------------------------
-; "HEX$" AND "BIN$" FUNCTIONS: HEX$(N), BIN$(N), 0 <= N <= 65535
+; "HEX$" AND "BIN$" FUNCTIONS: HEX$(N), BIN$(N), -65535 <= N <= 65535
+; A NEGATIVE N IS TAKEN MOD 65536 (TWO'S COMPLEMENT: HEX$(-1) = "FFFF").
 ; N < 256 GIVES 2 HEX OR 8 BINARY DIGITS, ELSE 4 OR 16.
 ; CALLED FROM UNARY WITH THE ARGUMENT IN FAC; RETURNS A STRING LIKE CHR$
 ; (DROPS UNARY'S RETURN SO ITS CHKNUM IS SKIPPED).
@@ -18,7 +19,16 @@ L_RADIX:
         txa
         pha
         jsr     CHKNUM
-        jsr     GETADR
+        lda     FAC
+        cmp     #$91		; |N| < 65536
+        bcc     L_RADIX0
+        jmp     IQERR
+L_RADIX0:
+        jsr     QINT		; low 16 bits, two's complement if negative
+        lda     FAC_LAST
+        sta     LINNUM
+        lda     FAC_LAST-1
+        sta     LINNUM+1
         lda     LINNUM+1
         pha
         lda     LINNUM
