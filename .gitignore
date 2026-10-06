@@ -420,3 +420,4 @@ FodyWeavers.xsd
 # BASIC-M6502
 ref/
 build/
+docs/x16/
