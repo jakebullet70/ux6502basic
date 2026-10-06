@@ -5,8 +5,7 @@ Microsoft BASIC for the 6502, brought forward from its 1978 source. This code is
 The code is a fork of [mist64/msbasic](https://github.com/mist64/msbasic), a ca65 version of the
 original source. It is NMOS 6502 code only, with no 65C02 opcodes.
 
-**Status:** early work. BASIC runs headless under sim65 and passes its tests. The X16 target and
-its kernal do not exist yet.
+**Status:** early work. BASIC runs headless under sim65 and passes its tests. 
 
 ## What is new
 
