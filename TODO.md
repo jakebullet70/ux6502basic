@@ -35,3 +35,11 @@ Put 6502 code inside a BASIC program and pass BASIC variables in and out, instea
 bytes and calling SYS. The design is still open: the syntax, where the code is stored or
 assembled, and how variables reach the code (registers, a parameter block, or variable
 addresses).
+
+## 5. User reference of working commands
+
+There is no user-facing list of what works yet: `CLAUDE.md` names the features briefly for
+development, and `docs/changes.md` explains how each change was made. Write a reference
+(for example `docs/reference.md`) that lists every statement, function and operator the sim
+build supports, with syntax, a short example and its errors, and marks what is new compared
+with Microsoft BASIC. Keep it updated with each new feature.
