@@ -170,6 +170,9 @@ UNFNC_ATN:
 .ifdef CONFIG_RPT
 		keyword	"RPT$", TOKEN_RPTSTR
 .endif
+.ifdef CONFIG_PI
+		keyword	"PI", TOKEN_PI
+.endif
 .ifdef CONFIG_2
 		keyword	"GO", TOKEN_GO
 .endif

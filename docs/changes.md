@@ -401,3 +401,17 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 127 bytes, plus 9 in the tokenizer, 3 in `FIN` and 8 in `FRM_ELEMENT`.
 - Test: `tests/radixlit.bas` (values, limits, lowercase, `$DEF`, `VAL`, `DATA`, `INPUT`, the
   `$` suffix on string variables, `LIST`).
+
+## PI
+
+- `CONFIG_PI` (sim only). `PI` is a keyword that gives 3.14159265 in expressions, as the
+  π character (byte $FF) does in the CBM builds. It is a token, not a variable, so `PI=5` is a
+  SYNTAX ERROR, and like every keyword it is found inside longer names: `SPIN` reads as
+  `S PI N`.
+- The keyword sits at the end of the function names (after `RPT$`), so no existing token
+  moves except `GO`. `FRM_ELEMENT` checks for `TOKEN_PI` before `ISLETC` and branches to
+  `PI_CONST`, placed just before `FRM_ELEMENT`, which loads `CON_PI` (same bytes as the CBM
+  constant). The check goes before the letter test because the `bcs FRM_VARIABLE` after it has
+  no room left in its branch range. The CBM builds are unchanged.
+- Size: 15 bytes for `PI_CONST` and the constant, 4 for the check, 3 for the keyword.
+- Test: `tests/pi.bas` (value, trig, a program and `LIST`, `PI=5`, `PI(1)`).

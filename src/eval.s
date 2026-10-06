@@ -318,6 +318,19 @@ EXIT:
         lda     FAC
         rts
 
+.ifdef CONFIG_PI
+; ----------------------------------------------------------------------------
+; "PI" CONSTANT ELEMENT
+; ----------------------------------------------------------------------------
+PI_CONST:
+        lda     #<CON_PI
+        ldy     #>CON_PI
+        jsr     LOAD_FAC_FROM_YA
+        jmp     CHRGET
+CON_PI:
+        .byte   $82,$49,$0f,$DA,$A1
+.endif
+
 ; ----------------------------------------------------------------------------
 ; GET ELEMENT IN EXPRESSION
 ;
@@ -333,6 +346,10 @@ L2D31:
 L2D36:
         jmp     FIN
 L2D39:
+.ifdef CONFIG_PI
+        cmp     #TOKEN_PI
+        beq     PI_CONST
+.endif
         jsr     ISLETC
         bcs     FRM_VARIABLE
 .ifdef CONFIG_CBM_ALL

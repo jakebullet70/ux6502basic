@@ -41,7 +41,7 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   `CONFIG_BLOCK`). `INSTR([start,] a$, b$)` (`instr.s`, `CONFIG_INSTR`). `HEX$(n)`, `BIN$(n)`
   (`hexbin.s`, `CONFIG_HEXBIN`). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). `a MOD b`
   (`mod.s`, `CONFIG_MOD`). `$FF` hex and `%1010` binary literals (`radixlit.s`,
-  `CONFIG_RADIX_LIT`). GOTO/GOSUB
+  `CONFIG_RADIX_LIT`). `PI` constant (`CONFIG_PI`). GOTO/GOSUB
   targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword
