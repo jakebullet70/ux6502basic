@@ -511,6 +511,20 @@ L2DC2:
         jmp     PATCH3
         .byte   $19
 .endif
+.ifdef CONFIG_HANDLE_IO
+; ST reads the status of the last file read
+        lda     VARNAM
+        cmp     #'S'
+        bne     LST1
+        lda     VARNAM+1
+        cmp     #'T'
+        bne     LST1
+        lda     Z96
+        jmp     FLOAT
+LST1:
+        lda     FAC_LAST-1
+        ldy     FAC_LAST
+.endif
 .ifdef CBM2
         bit     FAC+4
         bpl     LCE90

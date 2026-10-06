@@ -1,11 +1,14 @@
 ; sim65 target: headless build for tests.
-; Console I/O goes through sim65 paravirtualization calls on fd 0 (stdin)
-; and fd 1 (stdout). EOF on stdin exits sim65 with code 0.
+; Console and files go through sim65 paravirtualization calls (handle_io.s,
+; sim_extra.s); the console is fd 0 (stdin) and fd 1 (stdout). EOF on stdin
+; exits sim65 with code 0.
 
 ; configuration
 CONFIG_2C := 1
 
 CONFIG_SCRTCH_ORDER := 2
+CONFIG_FILE := 1 ; PRINT#, INPUT#, GET#, CMD, OPEN, CLOSE, SYS
+CONFIG_HANDLE_IO := 1 ; files and console through handles (handle_io.s)
 
 ; zero page
 ZP_START1 := $00
@@ -16,6 +19,8 @@ ZP_START4 := $66 ; w65c816sxb uses $65, which overlaps Z14
 ;extra ZP variables
 USR              := $000A
 SIM_CSP          := $00F0 ; cc65 C stack pointer used by sim65 paravirt calls
+CURDVC           := $00F2 ; current logical file, 0 = console
+Z96              := $00F3 ; ST, status of the last file read
 
 ; constants
 STACK_TOP        := $FC
@@ -27,7 +32,13 @@ WIDTH2           := 70 ; last comma tab stop, as BASIC derives it for width 80
 RAMSTART2        := $0400
 SIM_RAMTOP       := $C0 ; memory size scan stops at this page
 
+; console handles (host stdin and stdout)
+K_STDIN          := 0
+K_STDOUT         := 1
+
 ; sim65 paravirtualization entry points
+SIM_PV_OPEN      := $FFF4
+SIM_PV_CLOSE     := $FFF5
 SIM_PV_READ      := $FFF6
 SIM_PV_WRITE     := $FFF7
 SIM_PV_ARGS      := $FFF8

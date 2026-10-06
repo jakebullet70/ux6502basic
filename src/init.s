@@ -162,8 +162,11 @@ L4098:
 .ifndef KBD
         txa
         sta     SHIFTSIGNEXT
-  .ifdef CONFIG_CBM_ALL
+  .ifdef CONFIG_FILE
         sta     CURDVC
+  .endif
+  .ifdef CONFIG_HANDLE_IO
+        jsr     HIO_INIT
   .endif
         sta     LASTPT+1
   .ifndef AIM65

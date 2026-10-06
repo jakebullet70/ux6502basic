@@ -23,7 +23,7 @@ ERROR:
 .ifdef CONFIG_FILE
         lda     CURDVC    ; output
         beq     LC366     ; is screen
-        jsr     CLRCH     ; otherwise redirect output back to screen
+        jsr     IO_CLRCH  ; otherwise redirect output back to screen
         lda     #$00
         sta     CURDVC
 LC366:
@@ -48,6 +48,7 @@ L2329:
         pla
         bpl     L2329
 .endif
+ERROR_PRINTED:          ; handle_io.s prints its own messages, then comes here
         jsr     STKINI
         lda     #<QT_ERROR
         ldy     #>QT_ERROR
@@ -564,8 +565,8 @@ CLEARC:
 .endif
         sta     FRETOP
         sty     FRETOP+1
-.ifdef CONFIG_CBM_ALL
-        jsr     CLALL
+.ifdef CONFIG_FILE
+        jsr     IO_CLALL
 .endif
         lda     VARTAB
         ldy     VARTAB+1

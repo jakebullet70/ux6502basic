@@ -1,7 +1,7 @@
 .segment "EXTRA"
 
 ; ----------------------------------------------------------------------------
-; Console I/O for sim65.
+; I/O for sim65 through its paravirtualization calls.
 ; PVRead/PVWrite use the cc65 calling convention: fd and buffer are pushed on
 ; the C stack at (SIM_CSP), the count is passed in A/X, the result comes back
 ; in A/X. Every call rebuilds the 4-byte parameter frame in SIMPARM.
@@ -56,20 +56,31 @@ SIMARGS:
         sty     SIMECHO
         rts
 
-; read one character from stdin; preserves X and Y.
-; LF ends a line and becomes CR; CR is dropped so CRLF files work.
-; With echo on, other characters go to stdout like a terminal would, so
-; stdout is a full session transcript. BASIC prints the newline itself.
-MONRDKEY:
-        txa
-        pha
-        tya
-        pha
+; ----------------------------------------------------------------------------
+; Handle primitives for handle_io.s. sim65 handles are host file descriptors.
+; Text conversion on every handle: BASIC uses CR, host files use LF.
+; ----------------------------------------------------------------------------
+
+SIMRSAVE:
+        .res    2               ; X, Y in K_READ
+SIMWSAVE:
+        .res    2               ; X, Y in K_WRITE
+
+; X = handle. Returns carry clear and the byte in A, or carry set at end of
+; file. Keeps X and Y. LF becomes CR; CR is dropped, so CRLF files work.
+; Console (K_STDIN): end of file exits sim65 with code 0. With echo on,
+; characters go to stdout like a terminal would, so stdout is a full
+; session transcript. BASIC prints the newline itself.
+K_READ:
+        stx     SIMRSAVE
+        sty     SIMRSAVE+1
+        cpx     #K_STDIN
+        bne     @again
         bit     SIMECHO
         bpl     @again
         jsr     SIMARGS
 @again:
-        lda     #0
+        lda     SIMRSAVE
         jsr     SIMFRAME
         jsr     SIM_PV_READ
         cmp     #1
@@ -82,48 +93,89 @@ MONRDKEY:
         lda     #$0D
         bne     @done
 @echo:
+        ldx     SIMRSAVE
+        cpx     #K_STDIN
+        bne     @done
         ldy     SIMECHO
         beq     @done
-        jsr     MONCOUT
+        ldx     #K_STDOUT
+        jsr     K_WRITE
 @done:
-        sta     SIMCHAR
-        pla
-        tay
-        pla
-        tax
-        lda     SIMCHAR
+        ldx     SIMRSAVE
+        ldy     SIMRSAVE+1
+        clc
         rts
 @eof:
+        ldx     SIMRSAVE
+        cpx     #K_STDIN
+        bne     @fileeof
         lda     #0
         jmp     SIM_PV_EXIT
+@fileeof:
+        ldy     SIMRSAVE+1
+        sec
+        rts
 
-; write the character in A to stdout; preserves A, X and Y.
-; CR becomes LF; LF is dropped (BASIC sends CR LF).
-MONCOUT:
+; X = handle, A = byte. Keeps A, X and Y. CR becomes LF; LF is dropped
+; (BASIC sends CR LF).
+K_WRITE:
         cmp     #$0A
         beq     @skip
         pha
         sta     SIMCHAR
-        txa
-        pha
-        tya
-        pha
-        lda     SIMCHAR
+        stx     SIMWSAVE
+        sty     SIMWSAVE+1
         cmp     #$0D
         bne     @out
         lda     #$0A
         sta     SIMCHAR
 @out:
-        lda     #1
+        txa
         jsr     SIMFRAME
         jsr     SIM_PV_WRITE
-        pla
-        tay
-        pla
-        tax
+        ldx     SIMWSAVE
+        ldy     SIMWSAVE+1
         pla
 @skip:
         rts
+
+; open(name, flags): cc65 calls open() as a variadic function, so the
+; parameters are on the C stack and Y holds their size in bytes.
+; Read: O_RDONLY. Write: O_WRONLY|O_CREAT|O_TRUNC. Append: O_WRONLY|O_CREAT|O_APPEND.
+SIMOPENFLAGS:
+        .byte   $01, $32, $52
+
+; Name at HIO_NAME, A = mode. Returns carry clear and the handle in A, or
+; carry set.
+K_OPEN:
+        tax
+        lda     SIMOPENFLAGS,x
+        sta     SIMPARM
+        lda     #0
+        sta     SIMPARM+1
+        lda     #<HIO_NAME
+        sta     SIMPARM+2
+        lda     #>HIO_NAME
+        sta     SIMPARM+3
+        lda     #<SIMPARM
+        sta     SIM_CSP
+        lda     #>SIMPARM
+        sta     SIM_CSP+1
+        ldy     #4
+        jsr     SIM_PV_OPEN
+        cpx     #$FF            ; -1: failed
+        beq     @fail
+        clc
+        rts
+@fail:
+        sec
+        rts
+
+; X = handle.
+K_CLOSE:
+        txa
+        ldx     #0
+        jmp     SIM_PV_CLOSE
 
 ; fold a-z in A to A-Z; keeps X and Y. The tokenizer uses it so keywords
 ; and variable names may be typed in lowercase (strings, REM and DATA stay).

@@ -65,7 +65,7 @@ GET:
         jsr     GETBYT
         lda     #','
         jsr     SYNCHR
-        jsr     CHKIN
+        jsr     IO_CHKIN
         stx     CURDVC
 LCAB6:
 .endif
@@ -96,13 +96,13 @@ INPUTH:
         jsr     GETBYT
         lda     #$2C
         jsr     SYNCHR
-        jsr     CHKIN
+        jsr     IO_CHKIN
         stx     CURDVC
         jsr     L2A9E
 LCAD6:
         lda     CURDVC
 LCAD8:
-        jsr     CLRCH
+        jsr     IO_CLRCH
         ldx     #$00
         stx     CURDVC
         rts

@@ -90,6 +90,8 @@ INPUTBUFFERX = INPUTBUFFER & $FF00
 CR=13
 LF=10
 
+.include "io.s"
+
 .ifndef CRLF_1
 CRLF_1 := CR
 CRLF_2 := LF

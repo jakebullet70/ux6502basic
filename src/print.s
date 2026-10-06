@@ -288,7 +288,7 @@ L2A22:
         jmp     L2A22
 ; ----------------------------------------------------------------------------
 OUTSP:
-.ifdef CONFIG_FILE
+.if .def(CONFIG_FILE) && (!.def(CONFIG_HANDLE_IO)) ; handle I/O: no CRSR RIGHT
   .ifndef CBM1
 ; on non-screen devices, print SPACE
 ; instead of CRSR RIGHT

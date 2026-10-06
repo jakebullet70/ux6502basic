@@ -34,9 +34,18 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   MEMORY SIZE? and TERMINAL WIDTH? prompts (RAM is scanned; width is 80, like the X16 80x60
   screen). `make run` starts it interactively.
   Run with `sim65 -x <cycles>` in scripts so a hang cannot block.
+  Files work: `OPEN lf,"name"[,mode]` (0 read, 1 write, 2 append), CLOSE, PRINT#, INPUT#, GET#,
+  CMD, SYS and ST, through `handle_io.s` (see below). Typed lines are cut at 71 characters.
+- I/O layer: the interpreter reaches files only through `IO_CHKIN`, `IO_CHKOUT`, `IO_CLRCH`,
+  `IO_CHRIN`, `IO_CLALL`, plus `MONCOUT`, `MONRDKEY`, `ISCNTC`. `io.s` holds the register rules and
+  the CBM KERNAL mapping. `handle_io.s` implements them for Unix-style handles on top of the
+  target primitives `K_OPEN`, `K_CLOSE`, `K_READ` and `K_WRITE` (sim: sim65 calls; later: the
+  new X16 kernal).
 - `tests/`: `NAME.bas` is typed into the sim build, `NAME.out` is the expected transcript
   (banner included). `make test` runs `tests/run.py`, which prints only failures and the pass
   count. It ignores line endings and trailing spaces, and a run that hits the cycle limit fails.
+  sim65 runs in `build/`, so files that tests write land there. Keep test lines at 71 characters
+  or less.
   After an intended output change, run `python tests/run.py --update [NAME]` and review the diff.
 - `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
   `make pet-check` types a program headless and saves `build/pet.png`.

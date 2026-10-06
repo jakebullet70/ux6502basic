@@ -2,7 +2,7 @@
 
 Each tests/NAME.bas is fed to `sim65 build/sim.bin echo` on stdin. The output (a session
 transcript, because the `echo` argument makes BASIC echo its input) is compared with
-tests/NAME.out. Line endings and trailing spaces are ignored. Only failures are printed.
+tests/NAME.out. sim65 runs in build/, so files the tests write land there. Line endings and trailing spaces are ignored. Only failures are printed.
 
 Usage: python tests/run.py [--update] [NAME ...]
   --update  write the actual output to NAME.out instead of comparing
@@ -27,7 +27,7 @@ def run(name):
     with open(os.path.join(TESTS, name + ".bas"), "rb") as f:
         src = f.read().replace(b"\r", b"")  # a checkout may have CRLF
     p = subprocess.run([SIM65, "-x", CYCLES, BIN, "echo"], input=src,
-                       capture_output=True, timeout=60)
+                       capture_output=True, timeout=60, cwd=os.path.dirname(BIN))
     return p.returncode, normalize(p.stdout.decode("latin-1"))
 
 

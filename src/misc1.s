@@ -225,7 +225,7 @@ CMD:
         jsr     SYNCHR
 LC98F:
         php
-        jsr     CHKOUT
+        jsr     IO_CHKOUT
         stx     CURDVC
         plp
         jmp     PRINT

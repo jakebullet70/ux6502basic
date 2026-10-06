@@ -35,3 +35,7 @@
 .ifdef SIM
 .include "sim_extra.s"
 .endif
+
+.ifdef CONFIG_HANDLE_IO
+.include "handle_io.s"
+.endif

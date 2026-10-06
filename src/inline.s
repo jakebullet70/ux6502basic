@@ -120,7 +120,7 @@ L2453:
   .ifndef APPLE
 GETLN:
     .ifdef CONFIG_FILE
-        jsr     CHRIN
+        jsr     IO_CHRIN
         ldy     CURDVC
         bne     L2465
     .else
