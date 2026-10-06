@@ -28,3 +28,10 @@ QBasic-style syntax, matching the block `IF` and `DO` already in place. Three ph
 `%` variables are stored as 16-bit integers but every operation converts them to float and
 back. Doing integer arithmetic directly would speed up `A%=A%+1` and similar code. It is a big
 change to the expression evaluator for a modest gain, so it comes after the items above.
+
+## 4. Inline assembly with variable passing
+
+Put 6502 code inside a BASIC program and pass BASIC variables in and out, instead of POKEing
+bytes and calling SYS. The design is still open: the syntax, where the code is stored or
+assembled, and how variables reach the code (registers, a parameter block, or variable
+addresses).
