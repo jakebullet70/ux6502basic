@@ -154,6 +154,10 @@ UNFNC_ATN:
 		keyword_addr "VAL", VAL
 		keyword_addr "ASC", ASC
 		keyword_addr "CHR$", CHRSTR
+.ifdef CONFIG_HEXBIN
+		keyword_addr "HEX$", HEXSTR
+		keyword_addr "BIN$", BINSTR
+.endif
 		keyword_addr "LEFT$", LEFTSTR, TOKEN_LEFTSTR
 		keyword_addr "RIGHT$", RIGHTSTR
 		keyword_addr "MID$", MIDSTR

@@ -315,3 +315,16 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 101 bytes of code plus the 257-byte tables.
 - Test: `tests/varcache.bas` (names that share an entry, strings and integers, a new variable made
   after DIM, DEF FN, CLEAR, program edits, NEW).
+
+## HEX$ and BIN$
+
+- `CONFIG_HEXBIN` (sim only). Code in `hexbin.s`, included from `extra.s`. `HEX$(n)` and
+  `BIN$(n)` return n in hex or binary, for 0 <= n <= 65535 (anything else is ILLEGAL QUANTITY).
+  A value below 256 gives 2 hex or 8 binary digits, otherwise 4 or 16, with leading zeros.
+- The keywords sit in the function table after `CHR$` and before `LEFT$`, so UNARY parses their
+  one argument; this moves the tokens of LEFT$, RIGHT$, MID$, INSTR and GO up by 2. Like `CHR$`,
+  the routine drops UNARY's return so its numeric type check is skipped, and it builds the
+  string in place with `STRSPA` and `PUTNEW`. The value and digit sizes are kept on the stack
+  across `STRSPA`, which can collect garbage.
+- Size: 89 bytes.
+- Test: `tests/hexbin.bas`.

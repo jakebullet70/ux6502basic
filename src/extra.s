@@ -20,6 +20,10 @@
 .include "instr.s"
 .endif
 
+.ifdef CONFIG_HEXBIN
+.include "hexbin.s"
+.endif
+
 .ifdef CONFIG_GOTO_CACHE
 .include "gotocache.s"
 .endif
