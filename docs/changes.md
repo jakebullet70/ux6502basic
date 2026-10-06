@@ -288,3 +288,30 @@ remembered, so a repeated jump costs the same however far away the target line i
 - Size: 91 bytes of code plus the 256-byte tables.
 - Test: `tests/gotocache.bas` (changed and deleted target lines, inserted lines, ON GOTO/GOSUB,
   IF GOTO, RUN <line>, direct mode, and two GOTOs that share a cache entry).
+
+## Simple variable cache
+
+PTRGET used to search the simple variable table from the start on every use, so a variable made
+late cost more than one made early. Now the address of each variable's entry is remembered.
+
+- `CONFIG_VAR_CACHE` (sim only). Code in `varcache.s`, included from `extra.s`. In `var.s`,
+  PTRGET calls `VC_FIND` before the search and jumps straight to `SET_VARPNT_AND_YA` on a hit.
+  On a miss the old search runs; when it finds the variable (`VC_FOUND`) or makes a new one,
+  `VC_STORE` remembers it.
+- Key: the two name bytes in VARNAM. Value: the address of the 7-byte entry (LOWTR). A simple
+  variable never moves once made: a new one is added at the end of the simple variables and only
+  the arrays move up. VARTAB only changes through `SETPTRS`, which runs `CLEARC`, and `CLEARC`
+  empties the cache (NEW, RUN, CLR, every program line entry).
+- Arrays are not cached; they move whenever a simple variable is made.
+- When an undefined variable is read in an expression, BASIC returns zero without making the
+  variable. Nothing is cached then.
+- Direct-mapped, 64 entries. The index is `(VARNAM+1)*2 + VARNAM`, with bit 5 flipped for
+  strings and integers and bit 4 also flipped for integers, AND 63. Single-letter floats get
+  entries 1 to 26 and strings and integers mostly land elsewhere. Four 64-byte tables plus
+  `VC_IDX` (257 bytes) in the `IORAM` segment. An entry whose first name byte is 0 is empty.
+- Speed (`tests/bench.py`): `Z=Z+1` with Z last of 25 variables 4200 to 2744 cycles, `A$=B$`
+  1763 to 1363. The first one or two variables in the table get about 25 cycles slower per use,
+  because the hash costs about as much as one step of the old search.
+- Size: 101 bytes of code plus the 257-byte tables.
+- Test: `tests/varcache.bas` (names that share an entry, strings and integers, a new variable made
+  after DIM, DEF FN, CLEAR, program edits, NEW).

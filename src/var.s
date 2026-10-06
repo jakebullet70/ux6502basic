@@ -92,6 +92,12 @@ L2EF9:
 L2F05:
         lda     #$00
         sta     SUBFLG
+.ifdef CONFIG_VAR_CACHE
+        jsr     VC_FIND
+        bcc     L_VCMISS
+        jmp     SET_VARPNT_AND_YA
+L_VCMISS:
+.endif
         lda     VARTAB
         ldx     VARTAB+1
         ldy     #$00
@@ -110,7 +116,11 @@ L2F1B:
         lda     VARNAM+1
         iny
         cmp     (LOWTR),y
+.ifdef CONFIG_VAR_CACHE
+        beq     VC_FOUND
+.else
         beq     SET_VARPNT_AND_YA
+.endif
         dey
 L2F29:
         clc
@@ -229,6 +239,10 @@ L2F68:
 ; ----------------------------------------------------------------------------
 ; PUT ADDRESS OF VALUE OF VARIABLE IN VARPNT AND Y,A
 ; ----------------------------------------------------------------------------
+.ifdef CONFIG_VAR_CACHE
+VC_FOUND:
+        jsr     VC_STORE
+.endif
 SET_VARPNT_AND_YA:
         lda     LOWTR
         clc

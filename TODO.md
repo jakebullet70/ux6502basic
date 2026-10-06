@@ -3,14 +3,9 @@
 Planned work for ux6502basic. Items are done in order unless noted. Each `src/` change is logged
 in `docs/changes.md` and gets a test in `tests/`.
 
-## 1. Faster variable lookup
+## 1. New functions and literals
 
-PTRGET walks the variable table from the start on every use, so the 25th variable costs much
-more than the first. Speed up the search (for example a cache of the last few lookups, or an
-index by first letter) without changing the 7-byte variable format.
-
-- Measure with the "Z first of 25" and "Z last of 25" benchmark cases.
-- Sim build only, behind a config flag.
+HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary).
 
 ## 2. Real integer math (last)
 

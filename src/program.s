@@ -600,6 +600,9 @@ CLEARC:
 .ifdef CONFIG_GOTO_CACHE
         jsr     GC_CLEAR
 .endif
+.ifdef CONFIG_VAR_CACHE
+        jsr     VC_CLEAR
+.endif
 .ifdef KBD
         lda     #<CONST_MEMSIZ
         ldy     #>CONST_MEMSIZ

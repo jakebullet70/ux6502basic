@@ -23,3 +23,7 @@
 .ifdef CONFIG_GOTO_CACHE
 .include "gotocache.s"
 .endif
+
+.ifdef CONFIG_VAR_CACHE
+.include "varcache.s"
+.endif
