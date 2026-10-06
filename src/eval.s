@@ -408,6 +408,12 @@ LCC91:
         bne     L2D7B
         jmp     L31F3
 L2D7B:
+.ifdef CONFIG_INSTR
+        cmp     #TOKEN_INSTR
+        bne     L2D7C
+        jmp     INSTR
+L2D7C:
+.endif
         cmp     #TOKEN_SGN
         bcc     PARCHK
         jmp     UNARY

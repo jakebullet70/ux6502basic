@@ -157,6 +157,9 @@ UNFNC_ATN:
 		keyword_addr "LEFT$", LEFTSTR, TOKEN_LEFTSTR
 		keyword_addr "RIGHT$", RIGHTSTR
 		keyword_addr "MID$", MIDSTR
+.ifdef CONFIG_INSTR
+		keyword	"INSTR", TOKEN_INSTR
+.endif
 .ifdef CONFIG_2
 		keyword	"GO", TOKEN_GO
 .endif

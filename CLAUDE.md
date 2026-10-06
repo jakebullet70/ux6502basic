@@ -38,7 +38,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   CMD, SYS and ST, through `handle_io.s` (see below). Typed lines are cut at 80 characters
   (buffer at $0200, `LINE_MAX`); BS and DEL delete.
   Block `IF c THEN` / `ELSE` / `END IF` and `DO` / `LOOP` / `EXIT [DO]` (`block.s`,
-  `CONFIG_BLOCK`). No LET keyword (`CONFIG_NO_LET`). The keyword table may pass 256 bytes
+  `CONFIG_BLOCK`). `INSTR([start,] a$, b$)` (`instr.s`, `CONFIG_INSTR`). No LET keyword
+  (`CONFIG_NO_LET`). The keyword table may pass 256 bytes
   (`CONFIG_KW16`).
 - I/O layer: the interpreter reaches files only through `IO_CHKIN`, `IO_CHKOUT`, `IO_CLRCH`,
   `IO_CHRIN`, `IO_CLALL`, plus `MONCOUT`, `MONRDKEY`, `ISCNTC`. `io.s` holds the register rules and

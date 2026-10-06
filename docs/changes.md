@@ -248,3 +248,18 @@ float add for every digit, each time the line ran. VAL, INPUT and READ use the s
 - Cycles per statement: `A=1` 1525 to 1376, `A=12345` 5883 to 2220, `POKE 1000,1` 6019 to 3696.
 - Size: about 120 bytes.
 - Test: `tests/numbers.bas`.
+
+## INSTR function
+
+`INSTR([start,] a$, b$)` returns the 1-based position of `b$` in `a$`, searching from `start`
+(default 1), or 0 when it is not found.
+
+- `CONFIG_INSTR` (sim only). Code in `instr.s`, included from `extra.s`. The token goes after
+  MID$ in `token.s` with no vector entry; `eval.s` catches it before the `UNARY` dispatch, because
+  the optional first argument does not fit the `LEFT$`/`RIGHT$`/`MID$` calling form.
+- `start` of 0, below 0 or above 255 gives ILLEGAL QUANTITY. A `start` past the end gives 0.
+- An empty `b$` returns `start` when `start` <= LEN(a$)+1, else 0 (as in QuickBASIC).
+- Both strings are released as temporaries (`b$` first, since it is the newer one), so FRE does
+  not drop. The search reads the text after the release; nothing allocates in between.
+- Size: 167 bytes.
+- Test: `tests/instr.bas`.

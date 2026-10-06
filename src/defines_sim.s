@@ -13,6 +13,7 @@ CONFIG_BLOCK := 1 ; block IF/ELSE/END IF, DO/LOOP (block.s); needs CONFIG_HANDLE
 CONFIG_NO_LET := 1 ; no LET keyword (A=1 still works); keeps the keyword table small
 CONFIG_KW16 := 1 ; tokenizer and LIST walk the keyword table with KW_PTR (any length)
 CONFIG_FAST_FIN := 1 ; FIN reads digits as an integer and floats it once
+CONFIG_INSTR := 1 ; INSTR([start,] a$, b$) function
 
 ; zero page
 ZP_START1 := $00

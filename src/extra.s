@@ -15,3 +15,7 @@
 .ifdef CONFIG_BLOCK
 .include "block.s"
 .endif
+
+.ifdef CONFIG_INSTR
+.include "instr.s"
+.endif
