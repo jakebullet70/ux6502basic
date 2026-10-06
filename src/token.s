@@ -173,6 +173,11 @@ UNFNC_ATN:
 .ifdef CONFIG_PI
 		keyword	"PI", TOKEN_PI
 .endif
+.ifdef CONFIG_BITFN
+		keyword	"XOR", TOKEN_XOR
+		keyword	"SHL", TOKEN_SHL
+		keyword	"SHR", TOKEN_SHR
+.endif
 .ifdef CONFIG_2
 		keyword	"GO", TOKEN_GO
 .endif

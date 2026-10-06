@@ -31,6 +31,9 @@
 .ifdef CONFIG_MOD
 .include "mod.s"
 .endif
+.ifdef CONFIG_BITFN
+.include "bitfn.s"
+.endif
 .ifdef CONFIG_RADIX_LIT
 .include "radixlit.s"
 .endif

@@ -350,6 +350,14 @@ L2D39:
         cmp     #TOKEN_PI
         beq     PI_CONST
 .endif
+.ifdef CONFIG_BITFN
+        cmp     #TOKEN_XOR
+        bcc     L2D3A
+        cmp     #TOKEN_SHR+1
+        bcs     L2D3A
+        jmp     BITFN
+L2D3A:
+.endif
         jsr     ISLETC
         bcs     FRM_VARIABLE
 .ifdef CONFIG_CBM_ALL

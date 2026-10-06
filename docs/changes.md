@@ -415,3 +415,22 @@ late cost more than one made early. Now the address of each variable's entry is 
   no room left in its branch range. The CBM builds are unchanged.
 - Size: 15 bytes for `PI_CONST` and the constant, 4 for the check, 3 for the keyword.
 - Test: `tests/pi.bas` (value, trig, a program and `LIST`, `PI=5`, `PI(1)`).
+
+## XOR, SHL and SHR
+
+- `CONFIG_BITFN` (sim only). Code in `bitfn.s`, included from `extra.s`. `XOR(a, b)` is the
+  bitwise exclusive or, `SHL(a, n)` and `SHR(a, n)` shift a left or right by n bits. They are
+  functions rather than operators, and work on 16 bits like `AND` and `OR`.
+- a and b may be -65535 to 65535; a negative value is taken mod 65536, as `HEX$` does, so
+  `$FFFF` and -1 are the same bits. n is 0 to 255 (`GETBYT`); 16 or more gives 0. `SHR` is a
+  logical shift (zeros come in at the top). The result is signed, -32768 to 32767, like `AND`
+  and `OR`, so it fits a `%` variable and can be fed back into `AND` and `OR`:
+  `SHL(1, 15)` is -32768 and `SHR(-1, 1)` is 32767. Out of range values are ILLEGAL QUANTITY.
+- The three keywords follow `PI` at the end of the function names, so only `GO` moves.
+  `FRM_ELEMENT` checks the token range before `ISLETC` (the same branch range limit as `PI`)
+  and jumps to `BITFN`, which parses both arguments itself. The first argument and the token
+  are kept on the stack while the second is evaluated. Like every keyword, `XOR` is found in
+  names: `IFXORY` now reads as `IF XOR Y`, so write `IF X OR Y`.
+- Size: 108 bytes in `bitfn.s`, 11 in `FRM_ELEMENT`, 9 for the keywords.
+- Test: `tests/bitfn.bas` (values, sign and wrap, shift limits, `%` variable, a program and
+  `LIST`, errors).
