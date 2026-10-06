@@ -23,7 +23,7 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
 
 - `src/`: ca65 sources, forked from mist64/msbasic (2-clause BSD, see `src/README-msbasic.md`).
   One `msbasic.s` builds every target; `-D <target>` picks it, `<target>.cfg` sets the memory map.
-- `Makefile` (run in Git Bash): `make all`, `make <target>`, `make verify` (byte-compare with the
+- `Makefile` (run in Git Bash): `make all`, `make <target>`, `make test` (see `tests/`), `make verify` (byte-compare with the
   original ROM dumps; prints only mismatches), `make clean`. Output goes to `build/`.
 - `sim` target (our addition): headless build for sim65. Files `defines_sim.s`, `sim_extra.s`,
   `sim_iscntc.s`, `sim.cfg`. BASIC at $C000; console on fd 0/1 via sim65 paravirt calls. Any argument
@@ -34,6 +34,10 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   MEMORY SIZE? and TERMINAL WIDTH? prompts (RAM is scanned; width is 80, like the X16 80x60
   screen). `make run` starts it interactively.
   Run with `sim65 -x <cycles>` in scripts so a hang cannot block.
+- `tests/`: `NAME.bas` is typed into the sim build, `NAME.out` is the expected transcript
+  (banner included). `make test` runs `tests/run.py`, which prints only failures and the pass
+  count. It ignores line endings and trailing spaces, and a run that hits the cycle limit fails.
+  After an intended output change, run `python tests/run.py --update [NAME]` and review the diff.
 - `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
   `make pet-check` types a program headless and saves `build/pet.png`.
 - Upstream `defines_w65c816sxb.s` has overlapping zero page (`Z14` and `TEMPPT` both at $65,

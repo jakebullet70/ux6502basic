@@ -1,5 +1,5 @@
 # Build MS BASIC 6502 targets with ca65/ld65 and check them against the original ROM dumps.
-# Run from Git Bash: make [all|verify|clean|<target>|run|pet|pet-check]
+# Run from Git Bash: make [all|verify|test|clean|<target>|run|pet|pet-check]
 
 CC65    ?= /c/8bitProgramming/cc65/bin
 CA65    := $(CC65)/ca65
@@ -7,6 +7,7 @@ LD65    := $(CC65)/ld65
 SIM65   := $(CC65)/sim65
 VICE    ?= /c/8bitProgramming/GTK3VICE-3.8-win32
 XPET    := $(VICE)/bin/xpet.exe
+PYTHON  ?= /c/Users/Admin/AppData/Local/Programs/Python/Python313/python.exe
 SRC     := src
 BUILD   := build
 ORIG    := ref/msbasic/orig
@@ -34,6 +35,10 @@ verify: $(addprefix $(BUILD)/,$(addsuffix .bin,$(VERIFY_TARGETS)))
 	  cmp -s $(BUILD)/$$t.bin $(ORIG)/$$t.bin || { echo "DIFF $$t"; fail=1; }; \
 	done; [ $$fail = 0 ] && echo "verify: all $(words $(VERIFY_TARGETS)) targets match"
 
+# Run tests/*.bas in sim65 and diff with tests/*.out; prints only failures.
+test: $(BUILD)/sim.bin
+	@$(PYTHON) tests/run.py
+
 # Interactive BASIC in sim65 (stdin/stdout). EOF (Ctrl-Z, Enter) exits.
 run: $(BUILD)/sim.bin
 	$(SIM65) $<
@@ -57,4 +62,4 @@ pet-check: $(BUILD)/cbmbasic2-pet.bin
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: all verify clean run pet pet-check $(TARGETS)
+.PHONY: all verify test clean run pet pet-check $(TARGETS)
