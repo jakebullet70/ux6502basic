@@ -25,7 +25,7 @@ def normalize(text):
 
 def run(name):
     with open(os.path.join(TESTS, name + ".bas"), "rb") as f:
-        src = f.read()
+        src = f.read().replace(b"\r", b"")  # a checkout may have CRLF
     p = subprocess.run([SIM65, "-x", CYCLES, BIN, "echo"], input=src,
                        capture_output=True, timeout=60)
     return p.returncode, normalize(p.stdout.decode("latin-1"))
