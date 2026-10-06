@@ -414,6 +414,12 @@ L2D7B:
         jmp     INSTR
 L2D7C:
 .endif
+.ifdef CONFIG_RPT
+        cmp     #TOKEN_RPTSTR
+        bne     L2D7D
+        jmp     RPTSTR
+L2D7D:
+.endif
         cmp     #TOKEN_SGN
         bcc     PARCHK
         jmp     UNARY

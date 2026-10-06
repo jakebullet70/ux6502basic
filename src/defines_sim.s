@@ -15,6 +15,7 @@ CONFIG_KW16 := 1 ; tokenizer and LIST walk the keyword table with KW_PTR (any le
 CONFIG_FAST_FIN := 1 ; FIN reads digits as an integer and floats it once
 CONFIG_INSTR := 1 ; INSTR([start,] a$, b$) function
 CONFIG_HEXBIN := 1 ; HEX$ and BIN$ functions (hexbin.s)
+CONFIG_RPT := 1 ; RPT$(a$ or code, n) function (rpt.s)
 CONFIG_GOTO_CACHE := 1 ; cache GOTO/GOSUB targets (gotocache.s)
 CONFIG_VAR_CACHE := 1 ; cache simple variable addresses (varcache.s)
 

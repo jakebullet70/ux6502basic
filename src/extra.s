@@ -24,6 +24,10 @@
 .include "hexbin.s"
 .endif
 
+.ifdef CONFIG_RPT
+.include "rpt.s"
+.endif
+
 .ifdef CONFIG_GOTO_CACHE
 .include "gotocache.s"
 .endif

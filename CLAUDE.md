@@ -39,7 +39,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (buffer at $0200, `LINE_MAX`); BS and DEL delete.
   Block `IF c THEN` / `ELSE` / `END IF` and `DO` / `LOOP` / `EXIT [DO]` (`block.s`,
   `CONFIG_BLOCK`). `INSTR([start,] a$, b$)` (`instr.s`, `CONFIG_INSTR`). `HEX$(n)`, `BIN$(n)`
-  (`hexbin.s`, `CONFIG_HEXBIN`). GOTO/GOSUB targets are cached
+  (`hexbin.s`, `CONFIG_HEXBIN`). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). GOTO/GOSUB
+  targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword
   (`CONFIG_NO_LET`). The keyword table may pass 256 bytes

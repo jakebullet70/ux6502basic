@@ -331,3 +331,18 @@ late cost more than one made early. Now the address of each variable's entry is 
   across `STRSPA`, which can collect garbage.
 - Size: 106 bytes.
 - Test: `tests/hexbin.bas`.
+
+## RPT$
+
+- `CONFIG_RPT` (sim only). Code in `rpt.s`, included from `extra.s`. `RPT$(a$, n)` returns a$
+  repeated n times; `RPT$(c, n)` returns `CHR$(c)` repeated n times. n is 0 to 255, c is 0 to 255
+  (else ILLEGAL QUANTITY), and a result longer than 255 characters gives STRING TOO LONG.
+- The first argument may be a string or a number, which UNARY cannot parse, so the keyword sits
+  after `INSTR` with no table address and `FRM_ELEMENT` sends its token to `RPTSTR` directly, as
+  it does for INSTR. This moves the GO token up by 1. A numeric first argument is first turned
+  into a one-character temporary string, so both forms share the copy loop. The descriptor
+  address and n are kept across `STRSPA` (which can collect garbage), then `FRETMP` reads the
+  source text and `MOVSTR1` copies it n times.
+- Size: 101 bytes, plus 7 in `FRM_ELEMENT` and the 4-byte keyword.
+- Test: `tests/rpt.bas` (both forms, empty results, the 255 limit, errors, and a loop that forces
+  garbage collection).
