@@ -167,6 +167,10 @@ UNFNC_ATN:
 		keyword_addr "HEX$", HEXSTR
 		keyword_addr "BIN$", BINSTR
 .endif
+.ifdef CONFIG_CASE
+		keyword_addr "UCASE$", UCASESTR
+		keyword_addr "LCASE$", LCASESTR
+.endif
 		keyword_addr "LEFT$", LEFTSTR, TOKEN_LEFTSTR
 		keyword_addr "RIGHT$", RIGHTSTR
 		keyword_addr "MID$", MIDSTR

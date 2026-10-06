@@ -28,6 +28,10 @@
 .include "rpt.s"
 .endif
 
+.ifdef CONFIG_CASE
+.include "casestr.s"
+.endif
+
 .ifdef CONFIG_MOD
 .include "mod.s"
 .endif

@@ -460,3 +460,18 @@ late cost more than one made early. Now the address of each variable's entry is 
   `hexbin.s`.
 - Test: `tests/deek.bas` (byte order, sign and wrap, `DOKE a,DEEK(b)`, `POKE a,PEEK(b)`,
   `POKE a,LEN(HEX$(n))`, a program and `LIST`, errors).
+
+## UCASE$ and LCASE$
+
+- `CONFIG_CASE` (sim only). Code in `casestr.s`, included from `extra.s`. `UCASE$(a$)` returns a
+  copy of a$ with the ASCII letters a-z turned into A-Z; `LCASE$(a$)` turns A-Z into a-z. Other
+  characters, including `@[`{`, are copied unchanged.
+- Both names follow `BIN$` in the function names, before `LEFT$`, so they are normal
+  one-argument functions called through `UNFNC`; the tokens from `LEFT$` on move up by two
+  (sim only; the CBM builds are unchanged). Like `LEFT$`, the code gets the new string space
+  first (`STRINI`, which may collect garbage; `DSCPTR` points to the descriptor, which garbage
+  collection updates) and only then frees the argument (`FRETMP`). It copies and converts in one
+  loop into the new string and drops `UNARY`'s return, as `CHR$` does.
+- Size: 54 bytes in `casestr.s`, 16 for the keywords.
+- Test: `tests/case.bas` (both directions, letters next to the ranges, empty string, nested
+  calls, a program that forces garbage collection, `LIST`, errors).

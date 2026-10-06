@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$` and `LCASE$` added since.
 
 ## How the costs are measured
 
@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$ED0E (without the 12-byte sim65 header) | 11535 |
+| sim image, $C000-$ED0E (without the 12-byte sim65 header) | 11605 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4593 |
-| new keywords (all items in "New keywords" below) | 1357 |
+| free | 4523 |
+| new keywords (all items in "New keywords" below) | 1427 |
 | speed-ups and internals (all items in "Internals" below) | 731 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -32,52 +32,53 @@ Segments of the sim image:
 
 | Segment | Bytes |
 |---|---|
-| VECTORS (dispatch tables) | 161 |
-| KEYWORDS (keyword names) | 302 |
+| VECTORS (dispatch tables) | 165 |
+| KEYWORDS (keyword names) | 314 |
 | ERROR (error messages) | 249 |
 | CODE | 7773 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2033 |
+| EXTRA (sim I/O and most of our additions) | 2087 |
 | IORAM | 634 |
 
 ## Keyword table
 
-The sim build has 89 tokens, $80-$D8. Inserting a keyword shifts the tokens after it, so saved
+The sim build has 91 tokens, $80-$DA. Inserting a keyword shifts the tokens after it, so saved
 tokenized programs are only valid for the build that wrote them.
 
 | Token | Keyword | | Token | Keyword | | Token | Keyword |
 |---|---|---|---|---|---|---|---|
-| 80 | END | | 9E | OPEN | | BC | FRE |
-| 81 | FOR | | 9F | CLOSE | | BD | POS |
-| 82 | NEXT | | A0 | GET | | BE | SQR |
-| 83 | DATA | | A1 | NEW | | BF | RND |
-| 84 | INPUT# | | A2 | **ELSE** | | C0 | LOG |
-| 85 | INPUT | | A3 | **DO** | | C1 | EXP |
-| 86 | DIM | | A4 | **LOOP** | | C2 | COS |
-| 87 | READ | | A5 | **EXIT** | | C3 | SIN |
-| 88 | GOTO | | A6 | TAB( | | C4 | TAN |
-| 89 | RUN | | A7 | TO | | C5 | ATN |
-| 8A | IF | | A8 | FN | | C6 | PEEK |
-| 8B | RESTORE | | A9 | SPC( | | C7 | **DEEK** |
-| 8C | GOSUB | | AA | THEN | | C8 | LEN |
-| 8D | RETURN | | AB | NOT | | C9 | STR$ |
-| 8E | REM | | AC | STEP | | CA | VAL |
-| 8F | STOP | | AD | + | | CB | ASC |
-| 90 | ON | | AE | - | | CC | CHR$ |
-| 91 | WAIT | | AF | * | | CD | **HEX$** |
-| 92 | LOAD (stub) | | B0 | / | | CE | **BIN$** |
-| 93 | SAVE (stub) | | B1 | ^ | | CF | LEFT$ |
-| 94 | DEF | | B2 | AND | | D0 | RIGHT$ |
-| 95 | POKE | | B3 | OR | | D1 | MID$ |
-| 96 | **DOKE** | | B4 | **MOD** | | D2 | **INSTR** |
-| 97 | PRINT# | | B5 | > | | D3 | **RPT$** |
-| 98 | PRINT | | B6 | = | | D4 | **PI** |
-| 99 | CONT | | B7 | < | | D5 | **XOR** |
-| 9A | LIST | | B8 | SGN | | D6 | **SHL** |
-| 9B | CLEAR | | B9 | INT | | D7 | **SHR** |
-| 9C | CMD | | BA | ABS | | D8 | GO |
-| 9D | SYS | | BB | USR | | | |
+| 80 | END | | 9F | CLOSE | | BE | SQR |
+| 81 | FOR | | A0 | GET | | BF | RND |
+| 82 | NEXT | | A1 | NEW | | C0 | LOG |
+| 83 | DATA | | A2 | **ELSE** | | C1 | EXP |
+| 84 | INPUT# | | A3 | **DO** | | C2 | COS |
+| 85 | INPUT | | A4 | **LOOP** | | C3 | SIN |
+| 86 | DIM | | A5 | **EXIT** | | C4 | TAN |
+| 87 | READ | | A6 | TAB( | | C5 | ATN |
+| 88 | GOTO | | A7 | TO | | C6 | PEEK |
+| 89 | RUN | | A8 | FN | | C7 | **DEEK** |
+| 8A | IF | | A9 | SPC( | | C8 | LEN |
+| 8B | RESTORE | | AA | THEN | | C9 | STR$ |
+| 8C | GOSUB | | AB | NOT | | CA | VAL |
+| 8D | RETURN | | AC | STEP | | CB | ASC |
+| 8E | REM | | AD | + | | CC | CHR$ |
+| 8F | STOP | | AE | - | | CD | **HEX$** |
+| 90 | ON | | AF | * | | CE | **BIN$** |
+| 91 | WAIT | | B0 | / | | CF | **UCASE$** |
+| 92 | LOAD (stub) | | B1 | ^ | | D0 | **LCASE$** |
+| 93 | SAVE (stub) | | B2 | AND | | D1 | LEFT$ |
+| 94 | DEF | | B3 | OR | | D2 | RIGHT$ |
+| 95 | POKE | | B4 | **MOD** | | D3 | MID$ |
+| 96 | **DOKE** | | B5 | > | | D4 | **INSTR** |
+| 97 | PRINT# | | B6 | = | | D5 | **RPT$** |
+| 98 | PRINT | | B7 | < | | D6 | **PI** |
+| 99 | CONT | | B8 | SGN | | D7 | **XOR** |
+| 9A | LIST | | B9 | INT | | D8 | **SHL** |
+| 9B | CLEAR | | BA | ABS | | D9 | **SHR** |
+| 9C | CMD | | BB | USR | | DA | GO |
+| 9D | SYS | | BC | FRE | |  |  |
+| 9E | OPEN | | BD | POS | |  |  |
 
 Bold keywords are new. The others come from Microsoft BASIC (CBM BASIC 2 set). `LOAD` and `SAVE`
 are stubs that do nothing in the sim build. Removed from the CBM set: `LET` (`CONFIG_NO_LET`,
@@ -96,10 +97,11 @@ built from existing tokens, so they need no table entries.
 | `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)` | `CONFIG_BITFN` | 128 |
 | `RPT$(a$ or code, n)` | `CONFIG_RPT` | 112 |
 | `HEX$(n)`, `BIN$(n)` | `CONFIG_HEXBIN` | 108 |
+| `UCASE$(a$)`, `LCASE$(a$)` | `CONFIG_CASE` | 70 |
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1357** |
+| **Total** | | **1427** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 
@@ -124,14 +126,13 @@ guesses until the code is written.
 
 | Keywords | TODO | Table | Code (est.) | Total (est.) |
 |---|---|---|---|---|
-| `LCASE$(a$)`, `UCASE$(a$)` | 1 | 16 | 50 | 66 |
 | `CHARAT x,y,code[,color]`, `TEXTAT x,y,text[,color]` | 1 | 16 | 80 | 96 |
 | `CONTINUE` (in `FOR`/`NEXT` and `DO`/`LOOP`) | 1 | 10 | 80 | 90 |
 | `MEMCPY`, `MEMSET` (deferred) | 1 | 16 | 90 | 106 |
 | labels: `GOTO name`, `GOSUB name`, `name:` (no keyword) | 2A | 0 | 150 | 150 |
 | `SUB` / `END SUB`, `CALL`, `LOCAL` | 2B | 18 | 600 | 618 |
 | `FUNCTION` / `END FUNCTION` | 2C | 10 | 400 | 410 |
-| **Total** | | **86** | **1450** | **1536** |
+| **Total** | | **70** | **1400** | **1470** |
 
 Real integer math (TODO 3) adds no keywords but a large amount of code; inline assembly (TODO 4)
 is still an open design. With the estimates above, about 3000 bytes of the 16128-byte ROM space
