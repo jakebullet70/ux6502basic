@@ -13,6 +13,10 @@ HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary). Then the `
 the screen layout (or a cursor call) from the new kernal; the sim build has no screen, so its
 version and test are still open.
 
+Then `CONTINUE` in `FOR`/`NEXT` and `DO`/`LOOP` loops: it skips the rest of the body and goes on
+with the next pass, through the matching `NEXT` or `LOOP` (the counterpart of `EXIT DO`, in
+`block.s`).
+
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.
 
