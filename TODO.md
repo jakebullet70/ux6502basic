@@ -5,7 +5,8 @@ in `docs/changes.md` and gets a test in `tests/`.
 
 ## 1. New functions and literals
 
-HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary).
+HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary). Then the `XOR`, `SHL` and
+`SHR` operators (bitwise, on integers like `AND` and `OR`).
 
 ## 2. Labels, SUB and FUNCTION
 
