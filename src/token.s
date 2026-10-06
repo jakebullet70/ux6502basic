@@ -12,7 +12,7 @@
 		keyword_rts "READ", READ
 .ifdef APPLE
 		keyword_rts "PLT", PLT
-.else
+.elseif !.def(CONFIG_NO_LET)
 		keyword_rts "LET", LET
 .endif
 		keyword_rts "GOTO", GOTO, TOKEN_GOTO
@@ -80,6 +80,9 @@
 		keyword_rts "NEW", NEW
 .ifdef CONFIG_BLOCK
 		keyword_rts "ELSE", ELSE, TOKEN_ELSE
+		keyword_rts "DO", DO, TOKEN_DO
+		keyword_rts "LOOP", LOOP, TOKEN_LOOP
+		keyword_rts "EXIT", BLK_EXIT, TOKEN_EXIT
 .endif
 
 		count_tokens

@@ -1,4 +1,4 @@
-; Block IF / ELSE / END IF (CONFIG_BLOCK).
+; Block IF / ELSE / END IF and DO / LOOP / EXIT (CONFIG_BLOCK).
 ;
 ; IF c THEN with nothing after THEN on the line starts a block. A false
 ; condition skips to the matching ELSE or END IF. ELSE, reached after the
@@ -10,6 +10,12 @@
 ; The scan works on the tokenized text: a line whose last token (spaces
 ; skipped) is THEN opens a block, END followed by IF closes one. Text in
 ; quotes and after REM is skipped.
+;
+; DO pushes a 5-byte frame like GOSUB (token, line number, text pointer).
+; LOOP goes back to the statement after DO; EXIT [DO] leaves the loop and
+; goes on after the matching LOOP. FOR frames above the DO frame are dropped.
+; RETURN inside a DO loop gives RETURN WITHOUT GOSUB, and GOTO out of a DO
+; loop leaves its frame on the stack.
 
 .segment "EXTRA"
 
@@ -26,6 +32,7 @@ ELSE:
 BLK_FALSE:
         lda     #TOKEN_ELSE	; stop at ELSE too
         sta     BLK_MODE
+BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP scans for LOOP
         ldy     #0
         sty     BLK_DEPTH
         sty     BLK_LAST
@@ -45,6 +52,9 @@ BLK_FALSE:
         beq     @rem
         cmp     #' '
         beq     @next
+        ldx     BLK_MODE
+        cpx     #TOKEN_LOOP
+        beq     @exit
         cmp     BLK_MODE
         beq     @else
         cmp     #TOKEN_IF
@@ -52,7 +62,8 @@ BLK_FALSE:
         ldx     BLK_LAST
         cpx     #TOKEN_END
         bne     @last
-        ldx     BLK_DEPTH	; END IF
+@close:
+        ldx     BLK_DEPTH	; END IF or LOOP
         beq     @found
         dec     BLK_DEPTH
 @last:
@@ -94,5 +105,83 @@ BLK_FALSE:
         iny
         bne     @loop		; always
 @missing:
+        lda     BLK_MODE
+        cmp     #TOKEN_LOOP
+        beq     BLK_NODO
         ldx     #HIO_ERR_ENDIF
+        bne     BLK_ERR		; always
+@exit:					; EXIT: DO opens a loop, LOOP closes one
+        cmp     #TOKEN_LOOP
+        beq     @close
+        cmp     #TOKEN_EXIT
+        beq     @last
+        cmp     #TOKEN_DO
+        bne     @next		; LAST stays EXIT or LOOP, never THEN
+        ldx     BLK_LAST
+        cpx     #TOKEN_EXIT
+        beq     @next		; EXIT DO
+        inc     BLK_DEPTH
+        bne     @next		; always
+BLK_NODO:
+        ldx     #HIO_ERR_DOLOOP
+BLK_ERR:
         jmp     HIO_ERROR
+
+; ----------------------------------------------------------------------------
+; "EXIT" STATEMENT: EXIT [DO]. Drop the DO frame, go on after the matching LOOP
+; ----------------------------------------------------------------------------
+BLK_EXIT:
+        cmp     #TOKEN_DO	; EXIT DO: the DO is ignored
+        bne     @mode
+        jsr     CHRGET
+@mode:
+        lda     #TOKEN_LOOP
+        .byte   $2C
+
+; ----------------------------------------------------------------------------
+; "LOOP" STATEMENT: go back to the statement after DO
+; ----------------------------------------------------------------------------
+LOOP:
+        lda     #0
+        sta     BLK_MODE
+        lda     #$FF		; match no FOR frame
+        sta     FORPNT+1
+        jsr     GTFORPNT
+        cmp     #TOKEN_DO
+        bne     BLK_NODO
+        txs			; drop the FOR frames above the DO frame
+        lda     BLK_MODE
+        beq     @loop
+        txa			; EXIT: drop the DO frame too
+        adc     #4		; carry is set: +5
+        tax
+        txs
+        jmp     BLK_SCAN
+@loop:
+        pla			; pop the frame, DO pushes it again
+        pla
+        sta     CURLIN
+        pla
+        sta     CURLIN+1
+        pla
+        sta     TXTPTR
+        pla
+        sta     TXTPTR+1
+
+; ----------------------------------------------------------------------------
+; "DO" STATEMENT
+; ----------------------------------------------------------------------------
+DO:
+        lda     #$03
+        jsr     CHKMEM
+        lda     TXTPTR+1
+        pha
+        lda     TXTPTR
+        pha
+        lda     CURLIN+1
+        pha
+        lda     CURLIN
+        pha
+        lda     #TOKEN_DO
+        pha
+        jmp     NEWSTT

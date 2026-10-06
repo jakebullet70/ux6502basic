@@ -320,6 +320,38 @@ RET3:
 
 .include "inline.s"
 
+.ifdef CONFIG_KW16
+; ----------------------------------------------------------------------------
+; The keyword table may be longer than 256 bytes: KW_PTR points at the
+; current keyword and Y indexes into it.
+; KW_INIT: KW_PTR at the first keyword, Y = 0.
+; KW_NEXT: skip the rest of the keyword at (KW_PTR),y; KW_PTR at the next
+; keyword, Y = 0, Z set.
+; ----------------------------------------------------------------------------
+KW_INIT:
+        lda     #<TOKEN_NAME_TABLE
+        sta     KW_PTR
+        lda     #>TOKEN_NAME_TABLE
+        sta     KW_PTR+1
+        ldy     #0
+        rts
+
+KW_NEXT:
+        lda     (KW_PTR),y
+        iny
+        asl     a		; C = last character
+        bcc     KW_NEXT
+        tya			; Y = offset of the next keyword
+        clc
+        adc     KW_PTR
+        sta     KW_PTR
+        bcc     @done
+        inc     KW_PTR+1
+@done:
+        ldy     #0
+        rts
+.endif
+
 ; ----------------------------------------------------------------------------
 ; TOKENIZE THE INPUT LINE
 ; ----------------------------------------------------------------------------
@@ -363,7 +395,11 @@ L2484:
 ; ----------------------------------------------------------------------------
 L248C:
         sty     STRNG2
+.ifdef CONFIG_KW16
+        jsr     KW_INIT
+.else
         ldy     #$00
+.endif
         sty     EOLPNTR
         dey
         stx     TXTPTR
@@ -386,7 +422,11 @@ L2498:
   .endif
 .endif
         sec
+.ifdef CONFIG_KW16
+        sbc     (KW_PTR),y
+.else
         sbc     TOKEN_NAME_TABLE,y
+.endif
         beq     L2496
         cmp     #$80
         bne     L24D7
@@ -434,11 +474,16 @@ L24D0:
 L24D7:
         ldx     TXTPTR
         inc     EOLPNTR
+.ifdef CONFIG_KW16
+        jsr     KW_NEXT
+        lda     (KW_PTR),y
+.else
 L24DB:
         iny
         lda     MATHTBL+28+1,y
         bpl     L24DB
         lda     TOKEN_NAME_TABLE,y
+.endif
         bne     L2498
         lda     INPUTBUFFERX,x
         bpl     L24AA
@@ -801,6 +846,20 @@ L25E8:
         sbc     #$7F
         tax
         sty     FORPNT
+.ifdef CONFIG_KW16
+        jsr     KW_INIT
+L25F2:
+        dex
+        beq     L25FD
+        jsr     KW_NEXT
+        beq     L25F2		; always
+L25FD:
+        lda     (KW_PTR),y
+        bmi     L25CA
+        jsr     OUTDO
+        iny
+        bne     L25FD		; always
+.else
         ldy     #$FF
 L25F2:
         dex
@@ -816,4 +875,5 @@ L25FD:
         bmi     L25CA
         jsr     OUTDO
         bne     L25FD	; always
+.endif
 

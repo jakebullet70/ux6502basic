@@ -175,3 +175,46 @@ END IF
 - Pitfall: keywords are found inside names, so a variable such as `ELSEX` no longer works.
 - Size: 159 bytes in the sim build.
 - Test: `tests/block.bas`.
+
+## DO / LOOP / EXIT
+
+`CONFIG_BLOCK` also adds a loop without a counter or condition; `IF c THEN EXIT` ends it:
+
+```
+DO
+  ...
+  IF c THEN EXIT
+  ...
+LOOP
+```
+
+- `DO` pushes a 5-byte frame like GOSUB (token, line number, text pointer) and checks the stack
+  with `CHKMEM`. `LOOP` finds the frame with `GTFORPNT` (FOR frames above it are dropped, as
+  RETURN does), pops it and falls into DO, which pushes it again, so LOOP and DO share code.
+- `EXIT [DO]` (the DO is ignored) drops the frame and runs the block scan in a third mode
+  (`BLK_MODE` = `TOKEN_LOOP`): DO opens a level unless it follows EXIT, LOOP closes one. The
+  statements after the matching LOOP run. IF/THEN and END IF are not counted in this mode, so a
+  block IF inside the loop does not disturb it.
+- LOOP without a DO frame, or EXIT that finds no LOOP before the end of the program, gives
+  `?MISSING DO/LOOP ERROR` (one message for both, to save bytes; for EXIT the line number is the
+  last line scanned).
+- No count (`DO n`): FOR does counted loops.
+- Limits: RETURN inside a DO loop gives RETURN WITHOUT GOSUB; GOTO out of a DO loop leaves its
+  frame on the stack (not allowed by rule, not checked); in `EXIT:DO` the DO is taken as part of
+  `EXIT DO` by the scan. Keywords are found inside names, so names such as `DONE` no longer work.
+- `token.s`: statement tokens DO, LOOP and EXIT after ELSE. The EXIT handler is `BLK_EXIT`,
+  because `eval.s` already has a label `EXIT`.
+- Size: about 145 bytes in the sim build.
+- Test: `tests/do.bas`.
+
+## Keyword table longer than 256 bytes, no LET
+
+With DO, LOOP and EXIT the keyword table grew to 266 bytes. The tokenizer and LIST index it with
+Y, so it can hold only 256, and every typed line hung.
+
+- `CONFIG_KW16` (`program.s`): the tokenizer and LIST keep a pointer `KW_PTR` ($F7-$F8) to the
+  current keyword and index into it with Y. `KW_INIT` points it at the first keyword, `KW_NEXT`
+  skips to the next one. The table can now have any length (tokens still end at $FF). About 21
+  bytes.
+- `CONFIG_NO_LET` (`token.s`): the LET keyword is gone. Assignment without LET (`A=1`) works as
+  before; `LET A=1` is now a syntax error. Saves 5 bytes and one token.

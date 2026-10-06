@@ -9,7 +9,9 @@ CONFIG_2C := 1
 CONFIG_SCRTCH_ORDER := 2
 CONFIG_FILE := 1 ; PRINT#, INPUT#, GET#, CMD, OPEN, CLOSE, SYS
 CONFIG_HANDLE_IO := 1 ; files and console through handles (handle_io.s)
-CONFIG_BLOCK := 1 ; block IF/ELSE/END IF (block.s); needs CONFIG_HANDLE_IO
+CONFIG_BLOCK := 1 ; block IF/ELSE/END IF, DO/LOOP (block.s); needs CONFIG_HANDLE_IO
+CONFIG_NO_LET := 1 ; no LET keyword (A=1 still works); keeps the keyword table small
+CONFIG_KW16 := 1 ; tokenizer and LIST walk the keyword table with KW_PTR (any length)
 
 ; zero page
 ZP_START1 := $00
@@ -24,7 +26,8 @@ CURDVC           := $00F2 ; current logical file, 0 = console
 Z96              := $00F3 ; ST, status of the last file read
 BLK_DEPTH        := $00F4 ; block.s scan: nesting depth
 BLK_LAST         := $00F5 ; block.s scan: last token on the line
-BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE or 0
+BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE, 0 or TOKEN_LOOP
+KW_PTR           := $00F7 ; 2 bytes: keyword table pointer (CONFIG_KW16)
 
 ; constants
 STACK_TOP        := $FA ; as CBM2: $01FD-$01FF are in front of INPUTBUFFER
