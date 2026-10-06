@@ -25,32 +25,28 @@ L_RADIX:
         jmp     IQERR
 L_RADIX0:
         jsr     QINT		; low 16 bits, two's complement if negative
-        lda     FAC_LAST
-        sta     LINNUM
         lda     FAC_LAST-1
-        sta     LINNUM+1
-        lda     LINNUM+1
         pha
-        lda     LINNUM
+        lda     FAC_LAST
         pha
         tsx
         lda     STACK+4,x	; digits per byte
-        ldy     LINNUM+1
+        ldy     FAC_LAST-1
         beq     L_RADIX1
         asl     a
 L_RADIX1:
         jsr     STRSPA		; may collect garbage; the value is on the stack
         pla
-        sta     LINNUM
+        sta     FAC_LAST
         pla
-        sta     LINNUM+1
+        sta     FAC_LAST-1
         pla
         sta     INDEX		; bits per digit
         pla
         ldy     FAC		; fill from the last digit back
 L_RADIX2:
         dey
-        lda     LINNUM
+        lda     FAC_LAST
         ldx     INDEX
         and     #$0F
         cpx     #$01
@@ -64,8 +60,8 @@ L_RADIX4:
         adc     #$30
         sta     (FAC+1),y
 L_RADIX5:
-        lsr     LINNUM+1
-        ror     LINNUM
+        lsr     FAC_LAST-1
+        ror     FAC_LAST
         dex
         bne     L_RADIX5
         tya

@@ -434,3 +434,29 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 108 bytes in `bitfn.s`, 11 in `FRM_ELEMENT`, 9 for the keywords.
 - Test: `tests/bitfn.bas` (values, sign and wrap, shift limits, `%` variable, a program and
   `LIST`, errors).
+
+## DEEK and DOKE
+
+- `CONFIG_DEEK` (sim only). Code in `deek.s`, included from `extra.s`. `DEEK(addr)` reads the
+  16-bit word at addr (low byte first) and returns it unsigned, 0 to 65535, like `PEEK` returns
+  0 to 255. `DOKE addr, n` stores n as a word at addr. addr is 0 to 65535 (`GETADR`, as for
+  `PEEK` and `POKE`). n may be -65535 to 65535; a negative value is taken mod 65536, as `HEX$`
+  and `XOR` do, so `DOKE a, -1` stores $FFFF. Out of range values are ILLEGAL QUANTITY.
+- `DOKE` follows `POKE` in the statement names and `DEEK` follows `PEEK` in the function
+  names, so the tokens after each move up by one (sim only; the CBM builds are unchanged).
+  `DEEK` is a normal one-argument function called through `UNFNC`; it floats the word with
+  `FLOAT2` (positive) instead of `GIVAYF`, which would make values over 32767 negative.
+- `DOKE`, like `POKE`, keeps the address in `LINNUM` while it evaluates the value, so anything
+  in that expression that changes `LINNUM` makes it write to the wrong address. Two such cases
+  were found and fixed:
+  - `PEEK` uses `LINNUM` for its address, so `POKE 1001,PEEK(1000)` wrote to 1000. The sim
+    build now sets `CONFIG_PEEK_SAVE_LINNUM` (already used by BASIC 2), and `DEEK` saves and
+    restores `LINNUM` the same way.
+  - `HEX$` and `BIN$` kept the value in `LINNUM`, so `POKE a,LEN(HEX$(n))` went wrong. They now
+    keep it in `FAC_LAST-1` and `FAC_LAST`, where `QINT` leaves it (pulled back from the
+    stack after `STRSPA`); the new string's descriptor uses only `FAC` to `FAC+2`. This also
+    saves 8 bytes.
+- Size: 68 bytes in `deek.s`, 12 for the keywords, 12 for the `PEEK` save, 8 fewer in
+  `hexbin.s`.
+- Test: `tests/deek.bas` (byte order, sign and wrap, `DOKE a,DEEK(b)`, `POKE a,PEEK(b)`,
+  `POKE a,LEN(HEX$(n))`, a program and `LIST`, errors).

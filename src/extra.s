@@ -31,6 +31,10 @@
 .ifdef CONFIG_MOD
 .include "mod.s"
 .endif
+.ifdef CONFIG_DEEK
+.include "deek.s"
+.endif
+
 .ifdef CONFIG_BITFN
 .include "bitfn.s"
 .endif

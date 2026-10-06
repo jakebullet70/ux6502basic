@@ -54,6 +54,9 @@
 .ifndef CONFIG_NO_POKE
 		keyword_rts "POKE", POKE
 .endif
+.ifdef CONFIG_DEEK
+		keyword_rts "DOKE", DOKE
+.endif
 .ifdef CONFIG_FILE
 		keyword_rts "PRINT#", PRINTH
 .endif
@@ -151,6 +154,9 @@ UNFNC_ATN:
 .endif
 .ifndef CONFIG_NO_POKE
 		keyword_addr "PEEK", PEEK
+.endif
+.ifdef CONFIG_DEEK
+		keyword_addr "DEEK", DEEK
 .endif
 		keyword_addr "LEN", LEN
 		keyword_addr "STR$", STR
