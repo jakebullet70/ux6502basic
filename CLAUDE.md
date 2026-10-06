@@ -24,6 +24,15 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   One `msbasic.s` builds every target; `-D <target>` picks it, `<target>.cfg` sets the memory map.
 - `Makefile` (run in Git Bash): `make all`, `make <target>`, `make verify` (byte-compare with the
   original ROM dumps; prints only mismatches), `make clean`. Output goes to `build/`.
+- `sim` target (our addition): headless build for sim65. Files `defines_sim.s`, `sim_extra.s`,
+  `sim_iscntc.s`, `sim.cfg`. BASIC at $C000; console on fd 0/1 via sim65 paravirt calls; input is
+  echoed so stdout is a session transcript; EOF on stdin exits with code 0. Cold start asks
+  MEMORY SIZE? and TERMINAL WIDTH? (answer with blank lines). `make run` starts it interactively.
+  Run with `sim65 -x <cycles>` in scripts so a hang cannot block.
+- `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
+  `make pet-check` types a program headless and saves `build/pet.png`.
+- Upstream `defines_w65c816sxb.s` has overlapping zero page (`Z14` and `TEMPPT` both at $65,
+  so FRE hangs). `defines_sim.s` fixes this with ZP_START4 = $66.
 
 - `docs/asm/`: 6502 notes (NMOS rules, ca65) and the 65C02 instruction reference.
 - `docs/x16/`: Commander X16 reference manual (KERNAL, memory map, VERA, ...).

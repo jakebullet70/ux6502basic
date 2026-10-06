@@ -29,4 +29,7 @@
 .ifdef W65C816SXB
 .include "w65c816sxb_iscntc.s"
 .endif
+.ifdef SIM
+.include "sim_iscntc.s"
+.endif
 ;!!! runs into "STOP"

@@ -1,3 +1,11 @@
+.ifdef SIM
+; sim65 file header: signature, version 2, CPU 6502, C stack pointer,
+; load address, reset address
+		.segment "SIMHDR"
+        .byte   "sim65", 2, 0, <SIM_CSP
+        .word   $C000, COLD_START
+.endif
+
 		.segment "HEADER"
 .ifdef W65C816SXB
 ; Disable emulation mode (is left on from the monitor)

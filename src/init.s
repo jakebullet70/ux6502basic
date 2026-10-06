@@ -259,6 +259,12 @@ L40D7:
         cmp     #$A0
         beq     L40FA
 .endif
+.ifdef SIM
+; sim65: all 64K is RAM, so stop below the interpreter
+        lda     LINNUM+1
+        cmp     #SIM_RAMTOP
+        beq     L40FA
+.endif
 L40DD:
 .ifdef CONFIG_2
         lda     #$55 ; 01010101 / 10101010
