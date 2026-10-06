@@ -23,6 +23,8 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
 
 - `src/`: ca65 sources, forked from mist64/msbasic (2-clause BSD, see `src/README-msbasic.md`).
   One `msbasic.s` builds every target; `-D <target>` picks it, `<target>.cfg` sets the memory map.
+  Targets: `cbmbasic1` and `cbmbasic2` (checked against the ROM dumps; BASIC 2 runs in xpet) and
+  `sim`. The other upstream targets were removed; their `.ifdef` code in the shared sources stays.
 - `Makefile` (run in Git Bash): `make all`, `make <target>`, `make test` (see `tests/`), `make verify` (byte-compare with the
   original ROM dumps; prints only mismatches), `make clean`. Output goes to `build/`.
 - `sim` target (our addition): headless build for sim65. Files `defines_sim.s`, `sim_extra.s`,
@@ -53,8 +55,8 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   After an intended output change, run `python tests/run.py --update [NAME]` and review the diff.
 - `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
   `make pet-check` types a program headless and saves `build/pet.png`.
-- Upstream `defines_w65c816sxb.s` has overlapping zero page (`Z14` and `TEMPPT` both at $65,
-  so FRE hangs). `defines_sim.s` fixes this with ZP_START4 = $66.
+- `defines_sim.s` started from upstream `defines_w65c816sxb.s`, whose zero page overlaps (`Z14`
+  and `TEMPPT` both at $65, so FRE hangs). It uses ZP_START4 = $66.
 
 - `docs/changes.md`: log of our changes to the msbasic sources.
 - `docs/review-superbasic-ehbasic.md`: design lessons from F256 SuperBASIC, EhBASIC and

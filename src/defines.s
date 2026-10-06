@@ -1,33 +1,9 @@
 .if .def(cbmbasic1)
 CBM1 := 1
 .include "defines_cbm1.s"
-.elseif .def(osi)
-OSI := 1
-.include "defines_osi.s"
-.elseif .def(applesoft)
-APPLE := 1
-.include "defines_apple.s"
-.elseif .def(kb9)
-KIM := 1
-.include "defines_kim.s"
 .elseif .def(cbmbasic2)
 CBM2 := 1
 .include "defines_cbm2.s"
-.elseif .def(kbdbasic)
-KBD := 1
-.include "defines_kbd.s"
-.elseif .def(microtan)
-MICROTAN := 1
-.include "defines_microtan.s"
-.elseif .def(aim65)
-AIM65 := 1
-.include "defines_aim65.s"
-.elseif .def(sym1)
-SYM1 := 1
-.include "defines_sym1.s"
-.elseif .def(w65c816sxb)
-W65C816SXB := 1
-.include "defines_w65c816sxb.s"
 .elseif .def(sim)
 SIM := 1
 .include "defines_sim.s"

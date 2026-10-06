@@ -218,3 +218,17 @@ Y, so it can hold only 256, and every typed line hung.
   bytes.
 - `CONFIG_NO_LET` (`token.s`): the LET keyword is gone. Assignment without LET (`A=1`) works as
   before; `LET A=1` is now a syntax error. Saves 5 bytes and one token.
+
+## Only the CBM and sim targets
+
+The upstream targets for other machines (OSI, Apple, KIM-1, KIM BASIC, Microtan, AIM-65, SYM-1,
+W65C816SXB) are not ours to support and only slowed every build and check.
+
+- Removed their `defines_*.s`, `*_extra.s`, `*_iscntc.s`, `*_loadsave.s` and `.cfg` files, and
+  their branches in `defines.s`, `extra.s`, `iscntc.s` and `program.s`. `loadsave.s` held only
+  their includes and is gone too.
+- Kept: `cbmbasic1` and `cbmbasic2` (byte-compared with the ROM dumps by `make verify`; BASIC 2
+  also runs in xpet), and `sim`.
+- The `.ifdef APPLE`, `.ifdef KIM` and similar code inside the shared sources stays. It assembles
+  to nothing, and stripping it by hand risks breaking the verified builds.
+- Size: no change. The sim build is still 9779 bytes; only the source tree is smaller.

@@ -308,10 +308,6 @@ L2405:
         bcc     L23FA	; always
 
 ; ----------------------------------------------------------------------------
-.ifdef KBD
-.include "kbd_loadsave.s"
-.endif
-
 .ifdef CONFIG_2
 ; !!! kbd_loadsave.s requires an RTS here!
 RET3:

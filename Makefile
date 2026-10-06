@@ -13,8 +13,8 @@ BUILD   := build
 ORIG    := ref/msbasic/orig
 
 # Targets with an original ROM dump in $(ORIG)
-VERIFY_TARGETS := cbmbasic1 cbmbasic2 kbdbasic osi kb9 applesoft microtan aim65 sym1
-TARGETS := $(VERIFY_TARGETS) w65c816sxb sim
+VERIFY_TARGETS := cbmbasic1 cbmbasic2
+TARGETS := $(VERIFY_TARGETS) sim
 
 SOURCES := $(wildcard $(SRC)/*.s)
 
