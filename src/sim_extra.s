@@ -29,15 +29,45 @@ SIMFRAME:
         ldx     #0
         rts
 
+SIMECHO:
+        .byte   $FF             ; $FF: not checked yet, 0: no echo, 1: echo
+
+; Echo is on when sim65 gets any argument after the program file
+; ("sim65 sim.bin echo"). An interactive console already echoes what is
+; typed; tests feed stdin from a file and want it in the transcript.
+; PVArgs copies the arguments below the C stack pointer, so point it at
+; free RAM under RAMSTART2 first. It returns argc (program name included).
+SIMARGS:
+        lda     #<SIM_ARGS_TOP
+        sta     SIM_CSP
+        lda     #>SIM_ARGS_TOP
+        sta     SIM_CSP+1
+        lda     #<SIMPARM       ; argv pointer lands here, unused
+        ldx     #>SIMPARM
+        jsr     SIM_PV_ARGS
+        ldy     #0
+        cpx     #0
+        bne     @echo
+        cmp     #2
+        bcc     @set
+@echo:
+        iny
+@set:
+        sty     SIMECHO
+        rts
+
 ; read one character from stdin; preserves X and Y.
 ; LF ends a line and becomes CR; CR is dropped so CRLF files work.
-; Other characters are echoed like a terminal would, so stdout is a full
-; session transcript. BASIC prints the newline after the line itself.
+; With echo on, other characters go to stdout like a terminal would, so
+; stdout is a full session transcript. BASIC prints the newline itself.
 MONRDKEY:
         txa
         pha
         tya
         pha
+        bit     SIMECHO
+        bpl     @again
+        jsr     SIMARGS
 @again:
         lda     #0
         jsr     SIMFRAME
@@ -52,6 +82,8 @@ MONRDKEY:
         lda     #$0D
         bne     @done
 @echo:
+        ldy     SIMECHO
+        beq     @done
         jsr     MONCOUT
 @done:
         sta     SIMCHAR
@@ -91,4 +123,15 @@ MONCOUT:
         tax
         pla
 @skip:
+        rts
+
+; fold a-z in A to A-Z; keeps X and Y. The tokenizer uses it so keywords
+; and variable names may be typed in lowercase (strings, REM and DATA stay).
+SIM_UPPER:
+        cmp     #'a'
+        bcc     @keep
+        cmp     #'z'+1
+        bcs     @keep
+        and     #$DF
+@keep:
         rts

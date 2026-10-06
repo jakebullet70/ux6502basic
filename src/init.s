@@ -203,7 +203,7 @@ L4098:
   .endif
         ldx     #TEMPST
         stx     TEMPPT
-.ifndef CONFIG_CBM_ALL
+.if (!.def(CONFIG_CBM_ALL)) && (!.def(SIM)) ; sim: no MEMORY SIZE? prompt
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
@@ -304,7 +304,7 @@ L40FA:
         sty     FRETOP+1
 .endif
 L4106:
-.ifndef CONFIG_CBM_ALL
+.if (!.def(CONFIG_CBM_ALL)) && (!.def(SIM)) ; sim: no TERMINAL WIDTH? prompt
   .ifdef APPLE
         lda     #$FF
         jmp     L2829

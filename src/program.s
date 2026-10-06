@@ -343,6 +343,10 @@ LC49E:
         beq     L24D0
         bit     DATAFLG
         bvs     L24AC
+.ifdef SIM
+        jsr     SIM_UPPER
+        sta     INPUTBUFFERX,x
+.endif
         cmp     #$3F
         bne     L2484
         lda     #TOKEN_PRINT
@@ -372,6 +376,9 @@ L2498:
         jsr     GET_UPPER
 .else
         lda     INPUTBUFFERX,x
+  .ifdef SIM
+        jsr     SIM_UPPER
+  .endif
   .ifndef CONFIG_2
         cmp     #$20
         beq     L2497

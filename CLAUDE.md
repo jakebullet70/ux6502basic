@@ -9,6 +9,7 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
 - CPU is NMOS 6502 only. No 65C02 opcodes. See `docs/asm/6502-notes.md`.
 - `m6502.asm` is about 50k tokens. Never read it whole; grep, then read line ranges.
 - Use `git mv` / `git rm` for tracked files.
+- Log every change to `src/` (what and why) in `docs/changes.md`, in the same commit.
 
 ## Tools (not on PATH)
 
@@ -25,15 +26,20 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
 - `Makefile` (run in Git Bash): `make all`, `make <target>`, `make verify` (byte-compare with the
   original ROM dumps; prints only mismatches), `make clean`. Output goes to `build/`.
 - `sim` target (our addition): headless build for sim65. Files `defines_sim.s`, `sim_extra.s`,
-  `sim_iscntc.s`, `sim.cfg`. BASIC at $C000; console on fd 0/1 via sim65 paravirt calls; input is
-  echoed so stdout is a session transcript; EOF on stdin exits with code 0. Cold start asks
-  MEMORY SIZE? and TERMINAL WIDTH? (answer with blank lines). `make run` starts it interactively.
+  `sim_iscntc.s`, `sim.cfg`. BASIC at $C000; console on fd 0/1 via sim65 paravirt calls. Any argument
+  after the program (`sim65 build/sim.bin echo`) echoes input so stdout is a session transcript
+  (for tests; an interactive console echoes by itself). EOF on stdin exits with code 0.
+  Keywords and variable names may be typed in lowercase (tokenizer folds them; strings, REM and
+  DATA keep their case). Cold start skips the
+  MEMORY SIZE? and TERMINAL WIDTH? prompts (RAM is scanned; width is 80, like the X16 80x60
+  screen). `make run` starts it interactively.
   Run with `sim65 -x <cycles>` in scripts so a hang cannot block.
 - `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
   `make pet-check` types a program headless and saves `build/pet.png`.
 - Upstream `defines_w65c816sxb.s` has overlapping zero page (`Z14` and `TEMPPT` both at $65,
   so FRE hangs). `defines_sim.s` fixes this with ZP_START4 = $66.
 
+- `docs/changes.md`: log of our changes to the msbasic sources.
 - `docs/asm/`: 6502 notes (NMOS rules, ca65) and the 65C02 instruction reference.
 - `docs/x16/`: Commander X16 reference manual (KERNAL, memory map, VERA, ...).
 - `ref/msbasic/` (git-ignored): mist64/msbasic ca65 port, commit 2a0bc2f, with original ROM

@@ -20,8 +20,8 @@ SIM_CSP          := $00F0 ; cc65 C stack pointer used by sim65 paravirt calls
 ; constants
 STACK_TOP        := $FC
 SPACE_FOR_GOSUB  := $33
-WIDTH            := 72
-WIDTH2           := 56
+WIDTH            := 80 ; X16 text screen is 80x60
+WIDTH2           := 70 ; last comma tab stop, as BASIC derives it for width 80
 
 ; memory layout: BASIC lives at $C000, RAM below it
 RAMSTART2        := $0400
@@ -30,6 +30,8 @@ SIM_RAMTOP       := $C0 ; memory size scan stops at this page
 ; sim65 paravirtualization entry points
 SIM_PV_READ      := $FFF6
 SIM_PV_WRITE     := $FFF7
+SIM_PV_ARGS      := $FFF8
+SIM_ARGS_TOP     := $0400 ; command-line args are copied below this
 SIM_PV_EXIT      := $FFF9
 
 SAVE:
