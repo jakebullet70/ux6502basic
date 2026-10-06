@@ -120,6 +120,24 @@ new X16 kernal also uses Unix-style handles (0 stdin, 1 stdout).
 
 Known limits:
 
-- INPUT# goes through the console line editor: lines are cut at 71 characters, `@` and `_` are
-  edit keys, and control characters are dropped. Console lines have the same 71-character limit.
+- INPUT# goes through the console line editor: lines are cut at 80 characters (see below), BS
+  and DEL delete, and control characters are dropped.
 - GET# converts line ends like text, so binary files cannot be read byte for byte.
+
+## 80-character input line
+
+Typed lines were cut at 71 characters (`cpx #$47` in `inline.s`), the old Microsoft teletype limit,
+and the buffer was in zero page. The X16 screen is 80 characters wide.
+
+- `defines_sim.s`: `INPUTBUFFER = $0200`, as on CBM machines. Upstream already supports this
+  layout (`CONFIG_NO_INPUTBUFFER_ZP`, `CONFIG_INPUTBUFFER_0200`): the direct-mode test compares the
+  high byte of `TXTPTR` with $02, and the bytes at $01FD-$01FF in front of the buffer are used, so
+  `STACK_TOP` is $FA as in CBM BASIC 2. `LINE_MAX = 80` is the longest typed line.
+- `inline.s`: the sim has its own `INLIN`. It takes up to `LINE_MAX` characters and rings BEL when
+  the line is full. BS ($08) and DEL ($7F) delete the last character; `@` and `_` are ordinary
+  characters now. Other control characters are dropped. The upstream editing code depends on a
+  zero-page buffer, so it cannot be reused.
+- `print.s` (`L29B9`): the end of the line is handled as in CBM2 (`.if .def(CBM2) || .def(SIM)`),
+  which returns the buffer pointer for a buffer outside zero page.
+- Test: `tests/linein.bas` (80-character program line, INPUT and direct lines cut at 80, BS, STOP
+  and CONT, strings in direct mode).

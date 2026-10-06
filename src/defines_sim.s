@@ -23,12 +23,14 @@ CURDVC           := $00F2 ; current logical file, 0 = console
 Z96              := $00F3 ; ST, status of the last file read
 
 ; constants
-STACK_TOP        := $FC
+STACK_TOP        := $FA ; as CBM2: $01FD-$01FF are in front of INPUTBUFFER
 SPACE_FOR_GOSUB  := $33
 WIDTH            := 80 ; X16 text screen is 80x60
 WIDTH2           := 70 ; last comma tab stop, as BASIC derives it for width 80
 
 ; memory layout: BASIC lives at $C000, RAM below it
+INPUTBUFFER      := $0200 ; as on CBM machines; frees zero page
+LINE_MAX         := 80 ; longest typed line, one X16 screen row
 RAMSTART2        := $0400
 SIM_RAMTOP       := $C0 ; memory size scan stops at this page
 

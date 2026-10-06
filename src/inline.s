@@ -43,7 +43,39 @@ L0C32:
         rts
   .endif
 
-  .ifndef APPLE
+  .ifdef SIM
+; sim: buffer at $0200, LINE_MAX characters, BS or DEL deletes the last
+; character, other control characters are dropped. BEL when the line is full.
+        ldx     #$00
+INLIN2:
+        jsr     GETLN
+        cmp     #$0D
+        beq     L2453
+        cmp     #$08 ; BS
+        beq     @del
+        cmp     #$7F ; DEL
+        beq     @del
+        cmp     #$20
+        bcc     INLIN2
+        cpx     #LINE_MAX
+        bcs     @full
+        sta     INPUTBUFFER,x
+        inx
+        bne     INLIN2		; always
+@full:
+        lda     #$07 ; BEL
+        jsr     OUTDO
+        bne     INLIN2		; always
+@del:
+        txa
+        beq     INLIN2
+        dex
+        bpl     INLIN2		; always
+L2453:
+        jmp     L29B9
+  .endif
+
+  .if (!.def(APPLE)) && (!.def(SIM))
         ldx     #$00
 INLIN2:
         jsr     GETLN

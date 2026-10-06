@@ -35,7 +35,8 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   screen). `make run` starts it interactively.
   Run with `sim65 -x <cycles>` in scripts so a hang cannot block.
   Files work: `OPEN lf,"name"[,mode]` (0 read, 1 write, 2 append), CLOSE, PRINT#, INPUT#, GET#,
-  CMD, SYS and ST, through `handle_io.s` (see below). Typed lines are cut at 71 characters.
+  CMD, SYS and ST, through `handle_io.s` (see below). Typed lines are cut at 80 characters
+  (buffer at $0200, `LINE_MAX`); BS and DEL delete.
 - I/O layer: the interpreter reaches files only through `IO_CHKIN`, `IO_CHKOUT`, `IO_CLRCH`,
   `IO_CHRIN`, `IO_CLALL`, plus `MONCOUT`, `MONRDKEY`, `ISCNTC`. `io.s` holds the register rules and
   the CBM KERNAL mapping. `handle_io.s` implements them for Unix-style handles on top of the
@@ -44,7 +45,7 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
 - `tests/`: `NAME.bas` is typed into the sim build, `NAME.out` is the expected transcript
   (banner included). `make test` runs `tests/run.py`, which prints only failures and the pass
   count. It ignores line endings and trailing spaces, and a run that hits the cycle limit fails.
-  sim65 runs in `build/`, so files that tests write land there. Keep test lines at 71 characters
+  sim65 runs in `build/`, so files that tests write land there. Keep test lines at 80 characters
   or less.
   After an intended output change, run `python tests/run.py --update [NAME]` and review the diff.
 - `make pet` starts xpet (3032) with our BASIC 2 ROM (first 8K of `cbmbasic2.bin`).
@@ -53,6 +54,8 @@ test it with ca65, then extend it for new hardware (Commander X16 with a new KER
   so FRE hangs). `defines_sim.s` fixes this with ZP_START4 = $66.
 
 - `docs/changes.md`: log of our changes to the msbasic sources.
+- `docs/review-superbasic-ehbasic.md`: design lessons from F256 SuperBASIC, EhBASIC and
+  picocomputer/msbasic (line input, file I/O, kernal interface, extensions).
 - `docs/asm/`: 6502 notes (NMOS rules, ca65) and the 65C02 instruction reference.
 - `docs/x16/`: Commander X16 reference manual (KERNAL, memory map, VERA, ...).
 - `ref/msbasic/` (git-ignored): mist64/msbasic ca65 port, commit 2a0bc2f, with original ROM
