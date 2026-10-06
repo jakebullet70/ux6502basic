@@ -365,3 +365,17 @@ late cost more than one made early. Now the address of each variable's entry is 
   in floating point.
 - Size: 154 bytes, plus the 3-byte table entry and the 3-byte keyword.
 - Test: `tests/mod.bas` (signs, rounding, precedence, the 2^31 limit, errors).
+
+## Unknown variable check compares the whole caller address
+
+- `CONFIG_SAFE_NAMENOTFOUND` (upstream option, now on in the sim build). When `PTRGET` does
+  not find a simple variable, `NAMENOTFOUND` decides whether the caller only reads it (an
+  expression, which gets the constant 0 at `C_ZERO` and creates nothing) or will store into it
+  (which needs a new variable). It decided by comparing only the low byte of the caller's
+  return address with `FRM_VARIABLE_CALL`. When code moves, another `PTRGET` call can share
+  that low byte. The hex literal work moved the call in `PROCESS_INPUT_ITEM` onto it, so
+  `INPUT A` and `READ A` with a new numeric variable stored the value over `C_ZERO`, which is
+  `CON_HALF+2` in the ROM. That broke number output (`FOUT` rounds with `CON_HALF`) until the
+  next start. The option also compares the high byte. Cost: 8 bytes.
+- No dedicated test: the failure needs a particular code layout. `tests/data.bas` and
+  `tests/files.bas` showed it.
