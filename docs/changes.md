@@ -707,3 +707,25 @@ target decides what a bank means.
   `GTNUM` (address and byte), the same parser `POKE` uses.
 - Net: 80 bytes (10 keywords, 2 dispatch, 7 in `FRM_ELEMENT`, 61 EXTRA with the 3-byte stubs),
   image 12036 bytes. New test `tests/vera`.
+
+## CLS, LOCATE and COLOR (79 bytes, plus 10 in TEXTAT)
+
+`CLS` clears the screen, `LOCATE x, y` moves the cursor to column x, row y (0,0 is top left), and
+`COLOR fg[, bg]` sets the text colors (0 to 255 each) until the next `COLOR`.
+
+- All three are in `textat.s` (`CONFIG_SCREEN`, needs `CONFIG_TEXTAT`) and send ANSI codes to the
+  current output, like `TEXTAT`: `ESC[H ESC[2J`, `ESC[row;colH`, `ESC[38;5;fgm` and
+  `ESC[48;5;bgm`. The new kernal's console is planned as a POSIX-style terminal that understands
+  these codes, so there are no target primitives; the sim code is the real code.
+- `CLS` and `LOCATE` set `POSX` and `POSY`, so `POS(0)`, `POS(1)`, `TAB(` and comma output stay
+  right. `TEXTAT` leaves them alone, because it puts the cursor back. A terminal cannot report
+  the cursor row cheaply (`ESC[6n` needs a reply to parse), so BASIC keeps counting it.
+- `TEXTAT` gave up its inline code for the color and the position: the new subroutines `TA_SGR`
+  (prefix, decimal, `m`) and `TA_GOTO` (`ESC[row;colH`) serve `TEXTAT`, `COLOR` and `LOCATE`.
+  `COLOR` falls into `TA_SGR` for the background, `LOCATE` falls into `TA_GOTO`. That makes
+  `TEXTAT` 10 bytes larger on its own (189 bytes).
+- `LOCATE 1,` sets `POSX` before the row fails with an error. The error message starts a new line,
+  which clears `POSX` again; only `POSY` may be one off, which is harmless.
+- `CLS`, `LOCATE` and `COLOR` are statement keywords after `VPOKE`, so tokens shift again
+  (98 tokens, $80-$E1). New test `tests/screen`. Net: 89 bytes (14 keywords, 6 dispatch, 69
+  EXTRA), image 12125 bytes.

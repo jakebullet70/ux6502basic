@@ -103,6 +103,11 @@
 .ifdef CONFIG_VERA
 		keyword_rts "VPOKE", VPOKE
 .endif
+.ifdef CONFIG_SCREEN
+		keyword_rts "CLS", CLS
+		keyword_rts "LOCATE", LOCATE
+		keyword_rts "COLOR", COLOR
+.endif
 
 		count_tokens
 

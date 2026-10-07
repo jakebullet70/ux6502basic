@@ -26,6 +26,7 @@ CONFIG_PI := 1 ; PI constant keyword
 CONFIG_BITFN := 1 ; XOR, SHL and SHR functions (bitfn.s)
 CONFIG_DEEK := 1 ; DEEK function and DOKE statement (deek.s)
 CONFIG_PAUSE := 1 ; PAUSE jiffies statement, like SLEEP on the X16 (pause.s)
+CONFIG_SCREEN := 1 ; CLS, LOCATE and COLOR statements, ANSI codes (textat.s)
 CONFIG_VERA := 1 ; VPEEK function and VPOKE statement, stubs in the sim (vera.s)
 CONFIG_POS_LINE := 1 ; POS(1) gives the cursor line; a new line clears POSX
 CONFIG_PEEK_SAVE_LINNUM := 1 ; PEEK keeps LINNUM, so POKE A,PEEK(B) works

@@ -33,26 +33,16 @@ L_TA1:
         beq     L_TA2
         jsr     COMBYTE		; X = color
         ldy     #TA_COL-TA_TAB
-        jsr     TA_PUTS
-        txa
-        jsr     TA_DEC
-        lda     #'m'
-        jsr     MONCOUT
+        jsr     TA_SGR
 L_TA2:
-        ldy     #TA_POS-TA_TAB
-        jsr     TA_PUTS
         pla
         sta     DSCPTR+1
         pla
         sta     DSCPTR
         pla			; row
-        jsr     TA_DEC
-        lda     #';'
-        jsr     MONCOUT
+        tax
         pla			; column
-        jsr     TA_DEC
-        lda     #'H'
-        jsr     MONCOUT
+        jsr     TA_GOTO
         lda     DSCPTR
         ldy     DSCPTR+1
         jsr     FRETMP		; A = LEN, INDEX = text
@@ -77,6 +67,71 @@ TA_PUTS:
         bne     TA_PUTS
 L_TA5:
         rts
+
+.ifdef CONFIG_SCREEN
+; ----------------------------------------------------------------------------
+; "CLS" STATEMENT: CLEARS THE SCREEN AND PUTS THE CURSOR AT 0,0.
+; ESC[H ESC[2J; POS(0) AND POS(1) BECOME 0.
+; ----------------------------------------------------------------------------
+CLS:
+        ldy     #TA_CLS-TA_TAB
+        jsr     TA_PUTS		; ends with A = 0
+        sta     POSX
+        sta     POSY
+        rts
+
+; ----------------------------------------------------------------------------
+; "COLOR" STATEMENT: COLOR FG[,BG], 0-255 EACH, UNTIL THE NEXT COLOR.
+; ESC[38;5;FGm AND ESC[48;5;BGm.
+; ----------------------------------------------------------------------------
+COLOR:
+        jsr     GETBYT		; X = foreground
+        ldy     #TA_COL-TA_TAB
+        jsr     TA_SGR
+        jsr     CHRGOT
+        beq     L_TA5
+        jsr     COMBYTE		; X = background
+        ldy     #TA_BG-TA_TAB
+.endif
+
+; PRINT TA_TAB FROM OFFSET Y, THEN X IN DECIMAL AND "m"
+TA_SGR:
+        jsr     TA_PUTS
+        txa
+        jsr     TA_DEC
+        lda     #'m'
+        jmp     MONCOUT
+
+.ifdef CONFIG_SCREEN
+; ----------------------------------------------------------------------------
+; "LOCATE" STATEMENT: LOCATE X,Y MOVES THE CURSOR TO COLUMN X, ROW Y
+; (0,0 IS TOP LEFT). UNLIKE TEXTAT IT STAYS THERE: POS(0) GIVES X AND
+; POS(1) GIVES Y.
+; ----------------------------------------------------------------------------
+LOCATE:
+        jsr     GETBYT		; X = column
+        stx     POSX
+        jsr     COMBYTE		; X = row
+        stx     POSY
+        inx			; ANSI counts from 1
+        ldy     POSX
+        iny
+        tya
+.endif
+
+; PRINT ESC[ROW;COLUMNH, A = COLUMN, X = ROW, BOTH 1-BASED
+TA_GOTO:
+        pha
+        ldy     #TA_POS-TA_TAB
+        jsr     TA_PUTS
+        txa
+        jsr     TA_DEC
+        lda     #';'
+        jsr     MONCOUT
+        pla
+        jsr     TA_DEC
+        lda     #'H'
+        jmp     MONCOUT
 
 .ifndef CONFIG_RPT
 ; CHR$ AS A SUBROUTINE: CHRSTR DROPS ONE RETURN ADDRESS (UNARY'S), SO IT
@@ -117,3 +172,9 @@ TA_POS:
         .byte   $1B,"[",0
 TA_REST:
         .byte   $1B,"8",0
+.ifdef CONFIG_SCREEN
+TA_CLS:
+        .byte   $1B,"[H",$1B,"[2J",0
+TA_BG:
+        .byte   $1B,"[48;5;",0
+.endif

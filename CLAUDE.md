@@ -53,7 +53,9 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). `PAUSE n` waits n+1
   jiffies (`pause.s`, `CONFIG_PAUSE`; target primitive `K_JIFFY`, a busy loop in the sim).
   `VPEEK(bank,addr)`, `VPOKE bank,addr,n` for video memory (`vera.s`, `CONFIG_VERA`; target
-  primitives `K_VPEEK`, `K_VPOKE`, stubs in the sim). `POS(0)` column,
+  primitives `K_VPEEK`, `K_VPOKE`, stubs in the sim). `CLS`, `LOCATE x,y` (moves the cursor and
+  sets `POS()`), `COLOR fg[,bg]` (`textat.s`, `CONFIG_SCREEN`; ANSI codes, which the new kernal's
+  POSIX-style console is planned to understand, so no target primitives). `POS(0)` column,
   `POS(1)` line (`CONFIG_POS_LINE`; the sim counts printed lines in `POSY`). Labels: `100 name:`
   at a line start, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (`labels.s`,
   `CONFIG_LABELS`). The tokenizer does not look for keywords inside a name: a letter right after

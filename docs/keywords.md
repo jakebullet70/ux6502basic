@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)`, labels, the removal of `SPC(`, names without keyword crunching (also at the start of a name), `PAUSE`, `VPEEK` and `VPOKE` since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)`, labels, the removal of `SPC(`, names without keyword crunching (also at the start of a name), `PAUSE`, `VPEEK`, `VPOKE`, `CLS`, `LOCATE` and `COLOR` since.
 
 ## How the costs are measured
 
@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EF03 (without the 12-byte sim65 header) | 12036 |
+| sim image, $C000-$EF5C (without the 12-byte sim65 header) | 12125 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4092 |
-| new keywords (all items in "New keywords" below) | 1845 |
+| free | 4003 |
+| new keywords (all items in "New keywords" below) | 1934 |
 | speed-ups and internals (all items in "Internals" below) | 774 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -32,54 +32,55 @@ Segments of the sim image:
 
 | Segment | Bytes |
 |---|---|
-| VECTORS (dispatch tables) | 173 |
-| KEYWORDS (keyword names) | 339 |
+| VECTORS (dispatch tables) | 179 |
+| KEYWORDS (keyword names) | 353 |
 | ERROR (error messages) | 249 |
 | CODE | 7870 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2388 |
+| EXTRA (sim I/O and most of our additions) | 2457 |
 | IORAM | 634 |
 
 ## Keyword table
 
-The sim build has 95 tokens, $80-$DE. Inserting a keyword shifts the tokens after it, so saved
+The sim build has 98 tokens, $80-$E1. Inserting a keyword shifts the tokens after it, so saved
 tokenized programs are only valid for the build that wrote them.
 
 | Token | Keyword | | Token | Keyword | | Token | Keyword |
 |---|---|---|---|---|---|---|---|
-| 80 | END | | A0 | CLOSE | | C0 | POS |
-| 81 | FOR | | A1 | GET | | C1 | SQR |
-| 82 | NEXT | | A2 | NEW | | C2 | RND |
-| 83 | DATA | | A3 | **ELSE** | | C3 | LOG |
-| 84 | INPUT# | | A4 | **DO** | | C4 | EXP |
-| 85 | INPUT | | A5 | **LOOP** | | C5 | COS |
-| 86 | DIM | | A6 | **EXIT** | | C6 | SIN |
-| 87 | READ | | A7 | **TEXTAT** | | C7 | TAN |
-| 88 | GOTO | | A8 | **PAUSE** | | C8 | ATN |
-| 89 | RUN | | A9 | **VPOKE** | | C9 | PEEK |
-| 8A | IF | | AA | TAB( | | CA | **DEEK** |
-| 8B | RESTORE | | AB | TO | | CB | LEN |
-| 8C | GOSUB | | AC | FN | | CC | STR$ |
-| 8D | RETURN | | AD | THEN | | CD | VAL |
-| 8E | REM | | AE | NOT | | CE | ASC |
-| 8F | STOP | | AF | STEP | | CF | CHR$ |
-| 90 | ON | | B0 | + | | D0 | **HEX$** |
-| 91 | WAIT | | B1 | - | | D1 | **BIN$** |
-| 92 | LOAD (stub) | | B2 | * | | D2 | **UCASE$** |
-| 93 | SAVE (stub) | | B3 | / | | D3 | **LCASE$** |
-| 94 | DEF | | B4 | ^ | | D4 | LEFT$ |
-| 95 | POKE | | B5 | AND | | D5 | RIGHT$ |
-| 96 | **DOKE** | | B6 | OR | | D6 | MID$ |
-| 97 | PRINT# | | B7 | **MOD** | | D7 | **INSTR** |
-| 98 | PRINT | | B8 | > | | D8 | **RPT$** |
-| 99 | **CONTINUE** | | B9 | = | | D9 | **PI** |
-| 9A | CONT | | BA | < | | DA | **XOR** |
-| 9B | LIST | | BB | SGN | | DB | **SHL** |
-| 9C | CLEAR | | BC | INT | | DC | **SHR** |
-| 9D | CMD | | BD | ABS | | DD | **VPEEK** |
-| 9E | SYS | | BE | USR | | DE | GO |
-| 9F | OPEN | | BF | FRE | | | |
+| 80 | END | | A1 | GET | | C2 | FRE |
+| 81 | FOR | | A2 | NEW | | C3 | POS |
+| 82 | NEXT | | A3 | **ELSE** | | C4 | SQR |
+| 83 | DATA | | A4 | **DO** | | C5 | RND |
+| 84 | INPUT# | | A5 | **LOOP** | | C6 | LOG |
+| 85 | INPUT | | A6 | **EXIT** | | C7 | EXP |
+| 86 | DIM | | A7 | **TEXTAT** | | C8 | COS |
+| 87 | READ | | A8 | **PAUSE** | | C9 | SIN |
+| 88 | GOTO | | A9 | **VPOKE** | | CA | TAN |
+| 89 | RUN | | AA | **CLS** | | CB | ATN |
+| 8A | IF | | AB | **LOCATE** | | CC | PEEK |
+| 8B | RESTORE | | AC | **COLOR** | | CD | **DEEK** |
+| 8C | GOSUB | | AD | TAB( | | CE | LEN |
+| 8D | RETURN | | AE | TO | | CF | STR$ |
+| 8E | REM | | AF | FN | | D0 | VAL |
+| 8F | STOP | | B0 | THEN | | D1 | ASC |
+| 90 | ON | | B1 | NOT | | D2 | CHR$ |
+| 91 | WAIT | | B2 | STEP | | D3 | **HEX$** |
+| 92 | LOAD (stub) | | B3 | + | | D4 | **BIN$** |
+| 93 | SAVE (stub) | | B4 | - | | D5 | **UCASE$** |
+| 94 | DEF | | B5 | * | | D6 | **LCASE$** |
+| 95 | POKE | | B6 | / | | D7 | LEFT$ |
+| 96 | **DOKE** | | B7 | ^ | | D8 | RIGHT$ |
+| 97 | PRINT# | | B8 | AND | | D9 | MID$ |
+| 98 | PRINT | | B9 | OR | | DA | **INSTR** |
+| 99 | **CONTINUE** | | BA | **MOD** | | DB | **RPT$** |
+| 9A | CONT | | BB | > | | DC | **PI** |
+| 9B | LIST | | BC | = | | DD | **XOR** |
+| 9C | CLEAR | | BD | < | | DE | **SHL** |
+| 9D | CMD | | BE | SGN | | DF | **SHR** |
+| 9E | SYS | | BF | INT | | E0 | **VPEEK** |
+| 9F | OPEN | | C0 | ABS | | E1 | GO |
+| A0 | CLOSE | | C1 | USR | | | |
 
 Bold keywords are new. The others come from Microsoft BASIC (CBM BASIC 2 set). `LOAD` and `SAVE`
 are stubs that do nothing in the sim build. Removed from the CBM set: `LET` (`CONFIG_NO_LET`,
@@ -93,7 +94,7 @@ built from existing tokens, so they need no table entries.
 |---|---|---|
 | `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]`, `CONTINUE` | `CONFIG_BLOCK` | 306 |
 | labels: `name:` lines, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (no keyword) | `CONFIG_LABELS` | 126 |
-| `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 179 |
+| `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 189 |
 | `INSTR([start,] a$, b$)` | `CONFIG_INSTR` | 167 |
 | `a MOD b` | `CONFIG_MOD` | 160 |
 | `$FF`, `%1010` literals (no keyword) | `CONFIG_RADIX_LIT` | 147 |
@@ -105,9 +106,10 @@ built from existing tokens, so they need no table entries.
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PAUSE jiffies` (like `SLEEP` on the X16, but n is required; busy loop in the sim) | `CONFIG_PAUSE` | 44 |
 | `VPEEK(bank,addr)`, `VPOKE bank,addr,n` (like the X16; stubs in the sim) | `CONFIG_VERA` | 80 |
+| `CLS`, `LOCATE x,y`, `COLOR fg[,bg]` (ANSI codes; needs `CONFIG_TEXTAT`) | `CONFIG_SCREEN` | 79 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1845** |
+| **Total** | | **1934** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 
