@@ -125,7 +125,7 @@ CRDO:
 LC9D8:
 .endif
         lda     #CRLF_1
-.ifndef CONFIG_CBM_ALL
+.if (!.def(CONFIG_CBM_ALL)) && (!.def(CONFIG_POS_LINE)) ; PRINTNULLS clears POSX
         sta     POSX
 .endif
         jsr     OUTDO
@@ -166,9 +166,12 @@ L29D9:
         pla
         tax
   .else
-    .ifndef CONFIG_2
+    .if (!.def(CONFIG_2)) || .def(CONFIG_POS_LINE)
         lda     #$00
         sta     POSX
+    .endif
+    .ifdef CONFIG_POS_LINE
+        inc     POSY
     .endif
         eor     #$FF
   .endif

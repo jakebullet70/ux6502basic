@@ -19,13 +19,9 @@ with the next pass, through the matching `NEXT` or `LOOP` (the counterpart of `E
 Then `'` as a short form of `REM`: `' text` and `PRINT X: ' text` make the rest of the line a
 comment.
 
-Then functions that read the cursor position: the column and the line (row). `POS(0)` already
-gives the column, but first the sim must reset `POSX` after a new line (it stays at 13, so
-`POS(0)` and `TAB(` are wrong). For the line, a new function such as QBasic's `CSRLIN` (no
-argument, parsed like `PI`); a cheaper option is one keyword for both, for example `CSR(0)` for
-the column and `CSR(1)` for the line, which makes `POS` removable. BASIC does not track the
-line, so it comes from the target: the new kernal's screen call, and in the sim an ANSI cursor
-report (`ESC[6n`) or a count of the lines printed. `TEXTAT` is the matching way to set the
+Then functions that read the cursor position: `POS(0)` gives the column and `POS(1)` the line
+(`CONFIG_POS_LINE`). Done; in the sim the line is a count of the lines printed, and the new
+kernal port must read the row from its screen call. `TEXTAT` is the matching way to set the
 position.
 
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are

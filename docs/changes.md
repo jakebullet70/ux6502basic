@@ -575,3 +575,18 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Text: 74 bytes down to 52 (22 saved). Code: 12 bytes more (range test, two calls, `rts`,
   minus `jsr OUTQUES`).
 - Net: 10 bytes saved, image 11730 bytes. `tests/files.out` updated.
+
+## POSX fix, POS(1) gives the line (10 bytes)
+
+- Bug: after a new line, `POSX` stayed at 13. `CRDO` stores the CR code in `POSX`, and with
+  `CONFIG_2` the reset in `PRINTNULLS` is left out (AppleSoft clears it elsewhere). So
+  `POS(0)`, `TAB(` and the comma zones were all off by 13 after the first line.
+- New flag `CONFIG_POS_LINE` (sim build). `PRINTNULLS`, which runs after every new line (also
+  after a CR inside a printed string), clears `POSX` and counts the line in `POSY` ($F9).
+  `CRDO` no longer stores CR in `POSX` (2 bytes saved; `PRINTNULLS` clears it anyway).
+- `POS(n)`: `POS(0)` is the column as before; any other argument gives `POSY`. `POS` tests the
+  FAC exponent, so the argument needs no conversion (6 bytes). In the sim, `POSY` counts the
+  lines printed since the start (modulo 256); the new kernal port must read the row from its
+  screen call. `TEXTAT` does not move the cursor, so it does not change either value.
+- Net: 10 bytes more, image 11740 bytes. New test `tests/pos`. `arith`, `arrays`, `files`,
+  `strings` and `textat` expected outputs updated: comma zones and `POS(0)` are now right.

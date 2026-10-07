@@ -31,6 +31,11 @@ GIVAYF:
         ldx     #$90
         jmp     FLOAT1
 POS:
+.ifdef CONFIG_POS_LINE ; POS(0) is the column, any other argument the line
+        ldy     POSY
+        lda     FAC
+        bne     SNGFLT
+.endif
         ldy     POSX
 
 ; ----------------------------------------------------------------------------

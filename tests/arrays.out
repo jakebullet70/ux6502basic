@@ -14,7 +14,7 @@ OK
 60 dim m(2,3): m(2,3)=7: print m(2,3)+m(0,0)
 70 b(10)=1: print b(10)
 run
- 25             400
+ 25            400
 onethree
  7
  1

@@ -48,7 +48,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (`textat.s`, `CONFIG_TEXTAT`; ANSI codes in the sim). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). `a MOD b`
   (`mod.s`, `CONFIG_MOD`). `$FF` hex and `%1010` binary literals (`radixlit.s`,
   `CONFIG_RADIX_LIT`). `PI` constant (`CONFIG_PI`). `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)`
-  (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). GOTO/GOSUB
+  (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). `POS(0)` column,
+  `POS(1)` line (`CONFIG_POS_LINE`; the sim counts printed lines in `POSY`). GOTO/GOSUB
   targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword

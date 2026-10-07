@@ -25,6 +25,7 @@ CONFIG_RADIX_LIT := 1 ; $hex and %binary literals (radixlit.s)
 CONFIG_PI := 1 ; PI constant keyword
 CONFIG_BITFN := 1 ; XOR, SHL and SHR functions (bitfn.s)
 CONFIG_DEEK := 1 ; DEEK function and DOKE statement (deek.s)
+CONFIG_POS_LINE := 1 ; POS(1) gives the cursor line; a new line clears POSX
 CONFIG_PEEK_SAVE_LINNUM := 1 ; PEEK keeps LINNUM, so POKE A,PEEK(B) works
 CONFIG_GOTO_CACHE := 1 ; cache GOTO/GOSUB targets (gotocache.s)
 CONFIG_VAR_CACHE := 1 ; cache simple variable addresses (varcache.s)
@@ -44,6 +45,7 @@ BLK_DEPTH        := $00F4 ; block.s scan: nesting depth
 BLK_LAST         := $00F5 ; block.s scan: last token on the line
 BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE, 0, TOKEN_LOOP or TOKEN_NEXT
 KW_PTR           := $00F7 ; 2 bytes: keyword table pointer (CONFIG_KW16)
+POSY             := $00F9 ; cursor line, counts new lines (CONFIG_POS_LINE)
 
 ; constants
 STACK_TOP        := $FA ; as CBM2: $01FD-$01FF are in front of INPUTBUFFER
