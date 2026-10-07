@@ -15,6 +15,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   tokens and behavior may change or go away if that saves bytes or helps. Old CBM programs and
   saved tokenized files need not run. The `cbmbasic1`/`cbmbasic2` builds must still pass
   `make verify`, so put such changes behind an `.ifdef` in shared sources.
+- Compatibility with X16 BASIC does not matter either. X16 keywords are a source of ideas only;
+  their syntax and behavior may differ.
 
 ## Tools (not on PATH)
 
