@@ -192,7 +192,9 @@ L4098:
         lda     #$2C
         sta     LINNUM+1
     .endif
+    .ifndef SIM ; sim: the banner comes first
         jsr     CRDO
+    .endif
   .endif
   .ifdef CBM2
         inx
@@ -407,7 +409,7 @@ L4192:
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
-.ifdef CBM2
+.if .def(CBM2) || .def(SIM)
         lda     #<QT_BASIC
         ldy     #>QT_BASIC
         jsr     STROUT
@@ -488,7 +490,7 @@ QT_BYTES_FREE:
   .ifdef CBM1
   .elseif .def(CBM2)
         .byte   CR,0
-  .elseif .def(APPLE)
+  .elseif .def(APPLE) || .def(SIM) ; sim: RESTART starts OK on a new line
         .byte   0
   .else
         .byte   CR,LF,CR,LF
@@ -522,7 +524,9 @@ QT_BASIC:
         .byte   LF,CR,LF
 		.byte	"APPLE BASIC V1.1"
   .endif
-  .ifndef CONFIG_CBM_ALL
+  .ifdef SIM
+        .byte   "UX6502BASIC V0.1",CR,LF,CR,LF,0
+  .elseif !.def(CONFIG_CBM_ALL)
         .byte   CR,LF
     .ifdef MICROTAN
         .byte   "(C) 1980 MICROSOFT"
@@ -531,8 +535,6 @@ QT_BASIC:
         .byte   "(C) 1978 MICROSOFT"
     .elseif .def(SYM1)
         .byte   "COPYRIGHT 1978 SYNERTEK SYSTEMS CORP."
-    .elseif .def(SIM)
-        .byte   "UX6502BASIC V0.1"
     .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
     .endif

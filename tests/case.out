@@ -1,10 +1,6 @@
-
-
- 48127 BYTES FREE
-
-
 UX6502BASIC V0.1
 
+ 48127 BYTES FREE
 OK
 PRINT UCASE$("Hello, World 123 az@[`{");LCASE$("Hello, World 123 AZ@[`{")
 HELLO, WORLD 123 AZ@[`{hello, world 123 az@[`{
