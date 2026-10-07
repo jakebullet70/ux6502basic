@@ -24,6 +24,11 @@ Then functions that read the cursor position: `POS(0)` gives the column and `POS
 kernal port must read the row from its screen call. `TEXTAT` is the matching way to set the
 position.
 
+Then maybe drop `TAB(` (`CONFIG_NO_TAB`, like `CONFIG_NO_SPC`) to save about 20 bytes: the
+keyword table entry, the token test in PRINT and the column code. `RPT$(32,n-POS(0))` or
+`TEXTAT` do the same job. Unlike `TAB(`, `RPT$` gives an error when the cursor is already past
+column n, so decide first whether that matters.
+
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.
 
