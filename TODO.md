@@ -55,3 +55,11 @@ development, and `docs/changes.md` explains how each change was made. Write a re
 (for example `docs/reference.md`) that lists every statement, function and operator the sim
 build supports, with syntax, a short example and its errors, and marks what is new compared
 with Microsoft BASIC. Keep it updated with each new feature.
+
+## Parked (long term)
+
+Not scheduled. They need the new kernal's file calls first.
+
+- `CHAIN "name"`: load another program and run it, as a way to split programs that do not fit
+  in memory.
+- `DIR`: list the files on the disk.
