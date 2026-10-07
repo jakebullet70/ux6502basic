@@ -153,11 +153,13 @@ K_JIFFY:
 .endif
 
 .ifdef CONFIG_VERA
-; Video memory stubs for VPEEK and VPOKE: the sim has no video chip.
+; Video stubs for VPEEK, VPOKE and SCREEN: the sim has no video chip.
 ; K_VPEEK: A = bank, LINNUM = address; returns the byte in A (always 0).
 ; K_VPOKE: A = bank, LINNUM = address, X = byte; does nothing.
+; K_SCREEN: X = mode; does nothing.
 K_VPEEK:
         lda     #$00
+K_SCREEN:
 K_VPOKE:
         rts
 .endif

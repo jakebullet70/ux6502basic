@@ -1,4 +1,4 @@
-; VPEEK function and VPOKE statement (CONFIG_VERA), like on the X16.
+; VPEEK function, VPOKE and SCREEN statements (CONFIG_VERA), like on the X16.
 
 ; ----------------------------------------------------------------------------
 ; "VPEEK" FUNCTION: VPEEK(BANK, ADDR), 0 <= BANK <= 255, 0 <= ADDR <= 65535
@@ -42,3 +42,12 @@ VPOKE:
         jsr     GTNUM		; LINNUM = address, X = N
         pla			; bank
         jmp     K_VPOKE
+
+; ----------------------------------------------------------------------------
+; "SCREEN" STATEMENT: SCREEN MODE, 0 <= MODE <= 255
+; SETS THE SCREEN MODE. THE TARGET PRIMITIVE K_SCREEN DOES THE WORK AND
+; DECIDES WHAT EACH MODE MEANS (SIM: A STUB THAT DOES NOTHING).
+; ----------------------------------------------------------------------------
+SCREEN:
+        jsr     GETBYT		; X = mode
+        jmp     K_SCREEN

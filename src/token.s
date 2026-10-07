@@ -102,6 +102,7 @@
 .endif
 .ifdef CONFIG_VERA
 		keyword_rts "VPOKE", VPOKE
+		keyword_rts "SCREEN", SCREEN
 .endif
 .ifdef CONFIG_SCREEN
 		keyword_rts "CLS", CLS

@@ -729,3 +729,16 @@ target decides what a bank means.
 - `CLS`, `LOCATE` and `COLOR` are statement keywords after `VPOKE`, so tokens shift again
   (98 tokens, $80-$E1). New test `tests/screen`. Net: 89 bytes (14 keywords, 6 dispatch, 69
   EXTRA), image 12125 bytes.
+
+## SCREEN mode, a stub in the sim (14 bytes)
+
+`SCREEN mode` sets the screen mode, mode 0 to 255 (`GETBYT`). The target decides what each mode
+means; the sim has no video modes, so it is a stub there.
+
+- In `vera.s` (`CONFIG_VERA`), because it belongs to the video hardware like `VPEEK` and
+  `VPOKE`. Statement keyword after `VPOKE`, so tokens shift again (99 tokens, $80-$E2).
+- New target primitive `K_SCREEN` (X = mode). `SCREEN` passes the mode in X as `GETBYT` leaves
+  it, so the code is only `jsr GETBYT` and `jmp K_SCREEN`. The sim stub shares the `rts` of
+  `K_VPOKE` and costs nothing. The new kernal port must supply a real one.
+- Net: 14 bytes (6 keyword, 2 dispatch, 6 EXTRA), image 12139 bytes. Tests added to
+  `tests/vera`.
