@@ -681,3 +681,9 @@ value gives ?ILLEGAL QUANTITY.
   for the next VSYNC there.
 - `ISCNTC` runs every jiffy, so the break key can stop a long pause on a target that has one.
 - Net: 54 bytes (5 keyword, 2 dispatch, 47 EXTRA), image 11966 bytes. New test `tests/pause`.
+
+## PAUSE needs its argument (10 bytes saved)
+
+`PAUSE` without a number now gives ?SYNTAX ERROR (from `FRMNUM`) instead of waiting one jiffy;
+write `PAUSE 0` for that. This drops the `PHP`/`PLP` test and the zeroing of `LINNUM` (10
+bytes). PAUSE now costs 44 bytes, image 11956 bytes. The test types `PAUSE` to check the error.

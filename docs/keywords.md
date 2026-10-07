@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EEBD (without the 12-byte sim65 header) | 11966 |
+| sim image, $C000-$EEB3 (without the 12-byte sim65 header) | 11956 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4162 |
-| new keywords (all items in "New keywords" below) | 1775 |
+| free | 4172 |
+| new keywords (all items in "New keywords" below) | 1765 |
 | speed-ups and internals (all items in "Internals" below) | 774 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -38,7 +38,7 @@ Segments of the sim image:
 | CODE | 7863 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2337 |
+| EXTRA (sim I/O and most of our additions) | 2327 |
 | IORAM | 634 |
 
 ## Keyword table
@@ -102,10 +102,10 @@ built from existing tokens, so they need no table entries.
 | `HEX$(n)`, `BIN$(n)` | `CONFIG_HEXBIN` | 108 |
 | `UCASE$(a$)`, `LCASE$(a$)` | `CONFIG_CASE` | 70 |
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
-| `PAUSE [jiffies]` (like `SLEEP` on the X16; busy loop in the sim) | `CONFIG_PAUSE` | 54 |
+| `PAUSE jiffies` (like `SLEEP` on the X16, but n is required; busy loop in the sim) | `CONFIG_PAUSE` | 44 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1775** |
+| **Total** | | **1765** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 

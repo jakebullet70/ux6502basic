@@ -48,7 +48,7 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (`textat.s`, `CONFIG_TEXTAT`; ANSI codes in the sim). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). `a MOD b`
   (`mod.s`, `CONFIG_MOD`). `$FF` hex and `%1010` binary literals (`radixlit.s`,
   `CONFIG_RADIX_LIT`). `PI` constant (`CONFIG_PI`). `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)`
-  (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). `PAUSE [n]` waits n+1
+  (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). `PAUSE n` waits n+1
   jiffies (`pause.s`, `CONFIG_PAUSE`; target primitive `K_JIFFY`, a busy loop in the sim). `POS(0)` column,
   `POS(1)` line (`CONFIG_POS_LINE`; the sim counts printed lines in `POSY`). Labels: `100 name:`
   at a line start, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (`labels.s`,
