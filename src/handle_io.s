@@ -109,7 +109,8 @@ HIO_FREE:
 ; ----------------------------------------------------------------------------
 ; I/O errors (and the block errors of block.s). The main error table is full
 ; (its offsets are 8 bits), so these messages have their own table;
-; HIO_ERROR prints like ERROR does.
+; HIO_ERROR prints like ERROR does. File messages (offsets below
+; HIO_ERR_NOFILE) get the shared prefix "?FILE ", the others carry their own "?".
 ; ----------------------------------------------------------------------------
 HIO_NOTOPEN:
         ldx     #HIO_ERR_NOTOPEN
@@ -126,16 +127,26 @@ HIO_ERROR:
         sta     CURDVC
 @msg:
         jsr     CRDO
-        jsr     OUTQUES
-@loop:
-        lda     HIO_ERRORS,x
+        cpx     #HIO_ERR_NOFILE
+        bcs     @msg2
+        ldy     #HIO_ERR_FILE
+        jsr     HIO_PUTS
+@msg2:
+        txa
+        tay
+        jsr     HIO_PUTS
+        jmp     ERROR_PRINTED
+
+; Print message Y of HIO_ERRORS (OUTDO keeps X and Y).
+HIO_PUTS:
+        lda     HIO_ERRORS,y
         pha
         and     #$7F
         jsr     OUTDO
-        inx
+        iny
         pla
-        bpl     @loop
-        jmp     ERROR_PRINTED
+        bpl     HIO_PUTS
+        rts
 
 ; ----------------------------------------------------------------------------
 ; The I/O layer (see io.s)
@@ -330,16 +341,19 @@ SYS:
 
 HIO_ERRORS:
 HIO_ERR_OPEN = *-HIO_ERRORS
-        htasc   "FILE OPEN"
+        htasc   "OPEN"
 HIO_ERR_NOTOPEN = *-HIO_ERRORS
-        htasc   "FILE NOT OPEN"
+        htasc   "NOT OPEN"
 HIO_ERR_NOTFOUND = *-HIO_ERRORS
-        htasc   "FILE NOT FOUND"
+        htasc   "NOT FOUND"
 HIO_ERR_MODE = *-HIO_ERRORS
-        htasc   "FILE MODE"
+        htasc   "MODE"
 HIO_ERR_TOOMANY = *-HIO_ERRORS
-        htasc   "TOO MANY FILES"
+        htasc   "LIMIT"		; no free file entry
+HIO_ERR_NOFILE = *-HIO_ERRORS
+HIO_ERR_FILE = *-HIO_ERRORS
+        htasc   "?FILE "
 .ifdef CONFIG_BLOCK
 HIO_ERR_BLOCK = *-HIO_ERRORS
-        htasc   "UNMATCHED BLOCK"
+        htasc   "?UNMATCHED BLOCK"
 .endif

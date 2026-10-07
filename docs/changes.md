@@ -563,3 +563,15 @@ late cost more than one made early. Now the address of each variable's entry is 
   `?FILE MODE ERROR`, raised from `HIO_BADMODE` (`HIO_MODE` is already the mode table). Text:
   29 bytes down to 9, plus 3 bytes for the second entry point. 23 bytes.
 - Net: 36 bytes saved, image 11740 bytes. `tests/files.out` updated.
+
+## Shared ?FILE prefix, ?FILE LIMIT (10 bytes saved)
+
+- The four file messages in `handle_io.s` all began with `FILE `. The table now holds them
+  without it (`OPEN`, `NOT OPEN`, `NOT FOUND`, `MODE`) plus one prefix entry `?FILE `.
+  `HIO_ERROR` prints the prefix first when the message offset is below `HIO_ERR_NOFILE`, then
+  the message, through the new subroutine `HIO_PUTS` (indexed by Y; OUTDO keeps X and Y).
+  The `?` moved into the table (`?FILE `, `?UNMATCHED BLOCK`), so `jsr OUTQUES` is gone.
+- `?TOO MANY FILES ERROR` becomes `?FILE LIMIT ERROR` and shares the prefix.
+- Text: 74 bytes down to 52 (22 saved). Code: 12 bytes more (range test, two calls, `rts`,
+  minus `jsr OUTQUES`).
+- Net: 10 bytes saved, image 11730 bytes. `tests/files.out` updated.

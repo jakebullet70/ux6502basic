@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE` and the removal of `SPC(` since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix and the removal of `SPC(` since.
 
 ## How the costs are measured
 
@@ -17,10 +17,10 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EDDB (without the 12-byte sim65 header) | 11740 |
+| sim image, $C000-$EDD1 (without the 12-byte sim65 header) | 11730 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4388 |
+| free | 4398 |
 | new keywords (all items in "New keywords" below) | 1595 |
 | speed-ups and internals (all items in "Internals" below) | 718 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
@@ -38,7 +38,7 @@ Segments of the sim image:
 | CODE | 7764 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2217 |
+| EXTRA (sim I/O and most of our additions) | 2207 |
 | IORAM | 634 |
 
 ## Keyword table
