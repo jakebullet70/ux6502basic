@@ -1,24 +1,41 @@
 # ux6502basic
 
-Microsoft BASIC for the 6502, brought forward from its 1978 source. This code is an exersize at the moment, maybe something will happen in the future.
+Microsoft BASIC for the 6502, brought forward from its 1978 source and extended for new 6502
+hardware with a new Unix-style kernal. This code is an exercise at the moment; maybe something
+will come of it.
 
 The code is a fork of [mist64/msbasic](https://github.com/mist64/msbasic), a ca65 version of the
 original source. It is NMOS 6502 code only, with no 65C02 opcodes.
 
-**Status:** early work. BASIC runs headless under sim65 and passes its tests. 
+**Status:** early work. BASIC runs headless under sim65 and passes its tests. The new kernal
+does not exist yet, so the screen and video commands go to ANSI codes or stubs in the sim.
 
 ## What is new
 
 Compared to Commodore BASIC 2:
 
-- Block `IF c THEN` / `ELSE` / `END IF`, with `ELSE IF` chains.
-- `DO` / `LOOP` / `EXIT [DO]`.
-- No `LET` keyword (`A=1` still works).
-- Keywords and variable names may be typed in lowercase.
+- Structure: block `IF c THEN` / `ELSE` / `END IF` (with `ELSE IF` chains), `DO` / `LOOP` /
+  `EXIT [DO]`, `CONTINUE` in `FOR` and `DO` loops.
+- Labels: `100 name:` at a line start, then `GOTO name`, `GOSUB name`, `RUN name`,
+  `RESTORE name` and names in `ON` lists.
+- Functions and operators: `INSTR([start,] a$, b$)`, `HEX$(n)`, `BIN$(n)`, `UCASE$(a$)`,
+  `LCASE$(a$)`, `RPT$(a$ or code, n)`, `a MOD b`, `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)`, `PI`,
+  `DEEK(addr)` and `DOKE addr,n` (16-bit PEEK and POKE), `POS(1)` for the cursor line.
+- Literals: `$FF` hex and `%1010` binary.
+- Screen: `CLS`, `LOCATE x,y`, `COLOR fg[,bg]`, `TEXTAT x,y,a$ or code[,color]` (prints without
+  moving the cursor), `SCREEN mode`, `VPEEK(bank,addr)` and `VPOKE bank,addr,n` for video
+  memory, `PAUSE n` (waits n+1 jiffies).
 - File I/O by name: `OPEN lf,"name"[,mode]` (0 read, 1 write, 2 append), `CLOSE`, `PRINT#`,
   `INPUT#`, `GET#`, `CMD` and `ST`, on top of four primitives: open, close, read and write.
-- 80-character input lines with backspace, for an 80x60 screen.
 - `SYS address` calls machine code.
+- Keywords and variable names may be typed in lowercase. Keywords are not found inside names,
+  so `TOTAL` and `BORDER` are variables, but run-together code needs spaces (`FOR I`).
+- 80-character input lines with backspace, for an 80x60 screen.
+- Faster: `GOTO`/`GOSUB` targets and simple variable addresses are cached.
+- Removed to save ROM: `LET` (`A=1` still works) and `SPC(` (use `RPT$(32,n)`).
+
+Every keyword, with its cost in bytes, is listed in `docs/keywords.md`. Planned work is in
+`TODO.md`.
 
 Example:
 
