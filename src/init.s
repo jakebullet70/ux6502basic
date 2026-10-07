@@ -531,6 +531,8 @@ QT_BASIC:
         .byte   "(C) 1978 MICROSOFT"
     .elseif .def(SYM1)
         .byte   "COPYRIGHT 1978 SYNERTEK SYSTEMS CORP."
+    .elseif .def(SIM)
+        .byte   "UX6502BASIC V0.1"
     .else
         .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
     .endif

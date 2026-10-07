@@ -17,10 +17,10 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EF6A (without the 12-byte sim65 header) | 12139 |
+| sim image, $C000-$EF5B (without the 12-byte sim65 header) | 12124 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 3989 |
+| free | 4004 |
 | new keywords (all items in "New keywords" below) | 1948 |
 | speed-ups and internals (all items in "Internals" below) | 774 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
@@ -37,7 +37,7 @@ Segments of the sim image:
 | ERROR (error messages) | 249 |
 | CODE | 7870 |
 | CHRGET | 29 |
-| INIT | 354 |
+| INIT | 339 |
 | EXTRA (sim I/O and most of our additions) | 2463 |
 | IORAM | 634 |
 

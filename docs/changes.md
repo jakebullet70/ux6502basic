@@ -742,3 +742,13 @@ means; the sim has no video modes, so it is a stub there.
   `K_VPOKE` and costs nothing. The new kernal port must supply a real one.
 - Net: 14 bytes (6 keyword, 2 dispatch, 6 EXTRA), image 12139 bytes. Tests added to
   `tests/vera`.
+
+## Startup banner: UX6502BASIC V0.1 (saves 15 bytes)
+
+The sim build printed Microsoft's `COPYRIGHT 1977 BY MICROSOFT CO.` under the bytes-free line.
+It now prints `UX6502BASIC V0.1`, the name and version of this project.
+
+- `QT_BASIC` in `init.s` gets an `.elseif .def(SIM)` branch with the new text. The other targets
+  keep their strings, so `make verify` still passes.
+- The string is 15 bytes shorter: image 12124 bytes. Every `tests/*.out` file starts with the
+  banner, so all were updated.
