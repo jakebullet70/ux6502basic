@@ -752,3 +752,15 @@ It now prints `UX6502BASIC V0.1`, the name and version of this project.
   keep their strings, so `make verify` still passes.
 - The string is 15 bytes shorter: image 12124 bytes. Every `tests/*.out` file starts with the
   banner, so all were updated.
+
+## Sim: dead startup strings left out (saves 66 bytes)
+
+The sim skips the MEMORY SIZE? and TERMINAL WIDTH? prompts, but `init.s` still assembled their
+strings and the "WRITTEN BY" message that answering `A` to MEMORY SIZE? prints.
+
+- `QT_WRITTEN_BY` (the message), `QT_MEMORY_SIZE` and `QT_TERMINAL_WIDTH` sit in one
+  `.ifndef CONFIG_CBM_ALL` block; it becomes `.if !(.def(CONFIG_CBM_ALL) || .def(SIM))`.
+- The code at `PR_WRITTEN_BY` that prints the message gets the same condition. Only the prompt
+  code (not built for the sim) and the SYM1 header jump there. The label stays and falls into
+  `COLD_START`.
+- Net: 66 bytes (all INIT), image 12058 bytes. Output does not change.

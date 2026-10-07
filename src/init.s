@@ -9,7 +9,7 @@ FNDLIN2:
 ; ----------------------------------------------------------------------------
 PR_WRITTEN_BY:
 .ifndef KBD
-  .ifndef CONFIG_CBM_ALL
+  .if !(.def(CONFIG_CBM_ALL) || .def(SIM)) ; sim: never reached
     .ifndef AIM65
       .ifndef SYM1
         lda     #<QT_WRITTEN_BY
@@ -458,7 +458,7 @@ QT_WANT:
         .byte   0
   .endif
 QT_WRITTEN_BY:
-  .ifndef CONFIG_CBM_ALL
+  .if !(.def(CONFIG_CBM_ALL) || .def(SIM)) ; sim: prompts are skipped
   .if !(.def(AIM65) || .def(SYM1))
     .ifdef APPLE
 		asc80 "COPYRIGHT 1977 BY MICROSOFT CO"
