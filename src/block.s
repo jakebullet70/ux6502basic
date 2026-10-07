@@ -16,6 +16,10 @@
 ; goes on after the matching LOOP. FOR frames above the DO frame are dropped.
 ; RETURN inside a DO loop gives RETURN WITHOUT GOSUB, and GOTO out of a DO
 ; loop leaves its frame on the stack.
+;
+; CONTINUE starts the next pass of the innermost loop. In a DO loop it works
+; like LOOP. In a FOR loop it scans for the matching NEXT (FOR and NEXT are
+; counted like DO and LOOP) and runs it. NEXT I,J counts as one NEXT.
 
 .segment "EXTRA"
 
@@ -25,6 +29,9 @@
 ELSE:
         lda     #0		; stop at END IF only
         .byte   $2C
+BLK_CONTF:				; CONTINUE in a FOR loop: scan for NEXT
+        lda     #TOKEN_NEXT
+        .byte   $2C
 
 ; ----------------------------------------------------------------------------
 ; False block IF (from IF in flow2.s): skip to the matching ELSE or END IF
@@ -32,7 +39,7 @@ ELSE:
 BLK_FALSE:
         lda     #TOKEN_ELSE	; stop at ELSE too
         sta     BLK_MODE
-BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP scans for LOOP
+BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
         ldy     #0
         sty     BLK_DEPTH
         sty     BLK_LAST
@@ -55,6 +62,8 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP scans for LOOP
         ldx     BLK_MODE
         cpx     #TOKEN_LOOP
         beq     @exit
+        cpx     #TOKEN_NEXT
+        beq     @exit
         cmp     BLK_MODE
         beq     @else
         cmp     #TOKEN_IF
@@ -75,8 +84,12 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP scans for LOOP
         ldx     BLK_DEPTH
         bne     @last
 @found:
-        jsr     ADDON		; TXTPTR at the ELSE or IF token
+        jsr     ADDON		; TXTPTR at the ELSE, IF, LOOP or NEXT token
+        ldx     BLK_MODE
+        cpx     #TOKEN_NEXT
+        beq     @run		; NEXT: run it
         jsr     CHRGET
+@run:
         jmp     L288D		; run the rest of the line
 @rem:
         sta     BLK_LAST	; IF c THEN REM is a one-line IF
@@ -105,18 +118,21 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP scans for LOOP
         iny
         bne     @loop		; always
 @missing:
-        lda     BLK_MODE
-        cmp     #TOKEN_LOOP
-        beq     BLK_NODO
+        lda     BLK_MODE	; 0 or TOKEN_ELSE: END IF is missing
+        beq     @noif
+        cmp     #TOKEN_ELSE
+        bne     BLK_NODO
+@noif:
         ldx     #HIO_ERR_ENDIF
         bne     BLK_ERR		; always
-@exit:					; EXIT: DO opens a loop, LOOP closes one
-        cmp     #TOKEN_LOOP
+@exit:					; BLK_MODE closes a loop, the token before it opens one
+        cmp     BLK_MODE	; (DO LOOP, FOR NEXT)
         beq     @close
         cmp     #TOKEN_EXIT
         beq     @last
-        cmp     #TOKEN_DO
-        bne     @next		; LAST stays EXIT or LOOP, never THEN
+        adc     #1		; carry clear if below EXIT (DO, FOR): +1
+        cmp     BLK_MODE
+        bne     @next		; LAST stays EXIT, LOOP or NEXT, never THEN
         ldx     BLK_LAST
         cpx     #TOKEN_EXIT
         beq     @next		; EXIT DO
@@ -126,6 +142,16 @@ BLK_NODO:
         ldx     #HIO_ERR_DOLOOP
 BLK_ERR:
         jmp     HIO_ERROR
+
+; ----------------------------------------------------------------------------
+; "CONTINUE" STATEMENT: next pass of the innermost FOR or DO loop
+; ----------------------------------------------------------------------------
+CONTINUE:
+        lda     #0
+        sta     BLK_MODE
+        beq     BLK_FORPNT	; always; A = 0 matches the first FOR frame
+BLK_FOR:
+        jmp     BLK_CONTF
 
 ; ----------------------------------------------------------------------------
 ; "EXIT" STATEMENT: EXIT [DO]. Drop the DO frame, go on after the matching LOOP
@@ -145,8 +171,10 @@ LOOP:
         lda     #0
         sta     BLK_MODE
         lda     #$FF		; match no FOR frame
+BLK_FORPNT:
         sta     FORPNT+1
         jsr     GTFORPNT
+        beq     BLK_FOR		; only CONTINUE (A = 0) finds a FOR frame
         cmp     #TOKEN_DO
         bne     BLK_NODO
         txs			; drop the FOR frames above the DO frame

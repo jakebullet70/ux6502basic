@@ -2,7 +2,7 @@
 
 		keyword_rts "END", END, TOKEN_END
 		keyword_rts "FOR", FOR
-		keyword_rts "NEXT", NEXT
+		keyword_rts "NEXT", NEXT, TOKEN_NEXT
 		keyword_rts "DATA", DATA
 .ifdef CONFIG_FILE
 		keyword_rts "INPUT#", INPUTH
@@ -61,6 +61,9 @@
 		keyword_rts "PRINT#", PRINTH
 .endif
 		keyword_rts "PRINT", PRINT, TOKEN_PRINT
+.ifdef CONFIG_BLOCK
+		keyword_rts "CONTINUE", CONTINUE ; before CONT, or it reads as CONT INUE
+.endif
 		keyword_rts "CONT", CONT
 		keyword_rts "LIST", LIST
 .ifdef CONFIG_CBM_ALL

@@ -505,3 +505,21 @@ late cost more than one made early. Now the address of each variable's entry is 
   bytes). It now calls `CHRSTUB` (`jsr CHRSTR`, in `rpt.s`), the same trick `TEXTAT` used.
   `TEXTAT` uses that stub too and keeps its own copy only when `CONFIG_RPT` is off.
 - Saves 15 bytes in the sim image. Tests unchanged.
+
+## CONTINUE
+
+- Part of `CONFIG_BLOCK`, code in `block.s`. `CONTINUE` starts the next pass of the innermost
+  loop. It calls `GTFORPNT` with `FORPNT+1` = 0, which stops at the first FOR frame or at the
+  first other frame. A DO frame on top: the rest is `LOOP`'s code. A FOR frame on top: the block
+  scanner runs in a new mode, `TOKEN_NEXT`, finds the matching `NEXT` and runs it there, so the
+  loop either goes on or ends after that `NEXT`. No loop frame: `?MISSING DO/LOOP`, which is
+  also the error for a FOR loop that has no `NEXT` after the `CONTINUE`.
+- The scanner's loop mode is now generic: `BLK_MODE` holds the closing token and the token just
+  before it opens a loop (`DO`/`LOOP` and `FOR`/`NEXT` are next to each other in the table).
+  A `NEXT` that closes two loops (`NEXT J,I`) counts as one.
+- The name sits before `CONT` in the table: the tokenizer takes the first name that matches, so
+  after `CONT` it would read as `CONT` `INUE`. The tokens from `CONT` on move up by one (sim
+  only). `NEXT` gets the label `TOKEN_NEXT` (no bytes).
+- Size: 38 bytes (10 table, 28 code).
+- Test: `tests/continue.bas` (FOR and DO, nested loops of both kinds, inside a block IF, a REM
+  that holds NEXT, in a one-line FOR, `CONT` still listed as `CONT`, errors).

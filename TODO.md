@@ -14,7 +14,7 @@ port must replace the ANSI part with its screen calls.
 
 Then `CONTINUE` in `FOR`/`NEXT` and `DO`/`LOOP` loops: it skips the rest of the body and goes on
 with the next pass, through the matching `NEXT` or `LOOP` (the counterpart of `EXIT DO`, in
-`block.s`).
+`block.s`). Done.
 
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.

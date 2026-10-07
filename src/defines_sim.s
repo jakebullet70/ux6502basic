@@ -41,7 +41,7 @@ CURDVC           := $00F2 ; current logical file, 0 = console
 Z96              := $00F3 ; ST, status of the last file read
 BLK_DEPTH        := $00F4 ; block.s scan: nesting depth
 BLK_LAST         := $00F5 ; block.s scan: last token on the line
-BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE, 0 or TOKEN_LOOP
+BLK_MODE         := $00F6 ; block.s scan: TOKEN_ELSE, 0, TOKEN_LOOP or TOKEN_NEXT
 KW_PTR           := $00F7 ; 2 bytes: keyword table pointer (CONFIG_KW16)
 
 ; constants
