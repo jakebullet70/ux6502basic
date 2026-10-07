@@ -625,3 +625,22 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Not done: `IF c THEN name` runs the label as a statement and does nothing; write
   `THEN GOTO name`.
 - Net: 126 bytes (CODE 43, EXTRA 83), image 11866 bytes. New test `tests/labels`.
+
+## No keyword search inside a name (21 bytes)
+
+The tokenizer crunched keywords wherever they appeared, also inside names: `BORDER` became
+`B`,`OR`,`DER` and `SCORE` became `SC`,`OR`,`E`, so `POKE BORDER,1` or `SCORE=5` broke.
+`CONFIG_NAME_NOCRUNCH` (sim only) fixes this in `PARSE_INPUT_LINE` (`program.s`):
+
+- A letter whose last stored byte is also a letter is inside a name. It is stored as it is,
+  without searching the keyword table. Tokens, digits and spaces do not count as letters, so
+  `PRINTCHR$(65)` and `FORI=1TO3` still tokenize; `IFA=BTHEN` now needs spaces.
+- The check reads the last stored byte with `INPUTBUFFER-5,y`, like `LIT_TOKEN` does. For the
+  first character that is `INPUTBUFFER-1`, which can hold the high byte of the last line number
+  (line 20000 gives "N"). `PARSE_INPUT_LINE` now stores 4 there first. This also fixes the same
+  case in `LIT_TOKEN`.
+- Still a limit: a name must not start with a keyword (`TOTAL` is `TO`,`TAL`), because the first
+  letter of a name has no letter in front of it.
+- Labels keep working: `LABEL_FIND` compares raw bytes, and both the label line and the name
+  after `GOTO` are now stored as plain letters.
+- Net: 21 bytes (CODE), image 11887 bytes. New test `tests/names`.

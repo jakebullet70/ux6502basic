@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)`, labels and the removal of `SPC(` since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)`, labels, the removal of `SPC(` and names without keyword crunching since.
 
 ## How the costs are measured
 
@@ -17,12 +17,12 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EE59 (without the 12-byte sim65 header) | 11866 |
+| sim image, $C000-$EE6E (without the 12-byte sim65 header) | 11887 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4262 |
+| free | 4241 |
 | new keywords (all items in "New keywords" below) | 1721 |
-| speed-ups and internals (all items in "Internals" below) | 728 |
+| speed-ups and internals (all items in "Internals" below) | 749 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
 CBM BASIC 2 leaves screen, keyboard and file I/O to the KERNAL ROM. The sim image holds its own
@@ -35,7 +35,7 @@ Segments of the sim image:
 | VECTORS (dispatch tables) | 169 |
 | KEYWORDS (keyword names) | 324 |
 | ERROR (error messages) | 249 |
-| CODE | 7817 |
+| CODE | 7838 |
 | CHRGET | 29 |
 | INIT | 354 |
 | EXTRA (sim I/O and most of our additions) | 2290 |
@@ -116,10 +116,11 @@ built from existing tokens, so they need no table entries.
 | GOTO/GOSUB target cache | `CONFIG_GOTO_CACHE` | 347 |
 | keyword table longer than 256 bytes | `CONFIG_KW16` | 23 |
 | safer check in PTRGET | `CONFIG_SAFE_NAMENOTFOUND` | 8 |
+| no keyword search inside a name (`BORDER` is not `B`,`OR`,`DER`) | `CONFIG_NAME_NOCRUNCH` | 21 |
 | `POS(1)` gives the line; a new line clears the column | `CONFIG_POS_LINE` | 10 |
 | no `LET` keyword | `CONFIG_NO_LET` | -5 |
 | no `SPC(` keyword | `CONFIG_NO_SPC` | -13 |
-| **Total** | | **728** |
+| **Total** | | **749** |
 
 File I/O (`OPEN`, `CLOSE`, `PRINT#`, `INPUT#`, `GET#`, `CMD`, `SYS`, `ST`) uses the CBM keywords
 through `handle_io.s`. Its cost is not listed, because the sim build does not assemble without it.

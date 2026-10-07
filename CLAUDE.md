@@ -51,7 +51,9 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). `POS(0)` column,
   `POS(1)` line (`CONFIG_POS_LINE`; the sim counts printed lines in `POSY`). Labels: `100 name:`
   at a line start, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (`labels.s`,
-  `CONFIG_LABELS`; a name must not start with a keyword). GOTO/GOSUB
+  `CONFIG_LABELS`). The tokenizer does not look for keywords inside a name: a letter right after
+  a letter is stored as it is (`CONFIG_NAME_NOCRUNCH`), so `BORDER` stays a name and `IFA=BTHEN`
+  needs spaces. A name must still not start with a keyword (`TOTAL` is `TO`,`TAL`). GOTO/GOSUB
   targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword

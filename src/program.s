@@ -355,6 +355,9 @@ PARSE_INPUT_LINE:
         ldx     TXTPTR
         ldy     #$04
         sty     DATAFLG
+.ifdef CONFIG_NAME_NOCRUNCH
+        sty     INPUTBUFFER-1	; "last stored byte" of the first char: no letter
+.endif
 L246C:
         lda     INPUTBUFFERX,x
 .ifdef CONFIG_CBM_ALL
@@ -392,6 +395,16 @@ L2484:
         bcc     L248C
         cmp     #$3C
         bcc     L24AC
+.ifdef CONFIG_NAME_NOCRUNCH
+; A LETTER RIGHT AFTER A LETTER IS INSIDE A NAME: STORE IT, NO KEYWORD SEARCH
+        jsr     ISLETC
+        bcc     L248C
+        lda     INPUTBUFFER-5,y	; last stored byte
+        jsr     ISLETC
+        bcc     L248C
+        lda     INPUTBUFFERX,x
+        bcs     L24AC		; always
+.endif
 ; ----------------------------------------------------------------------------
 ; SEARCH TOKEN NAME TABLE FOR MATCH STARTING
 ; WITH CURRENT CHAR FROM INPUT LINE
