@@ -68,7 +68,7 @@ do:x=x+1:print x;:if x<3 then loop
 OK
 exit
 
-?MISSING DO/LOOP ERROR
+?UNMATCHED BLOCK ERROR
 OK
 new
 
@@ -86,5 +86,5 @@ OK
 run
 a
 
-?MISSING DO/LOOP ERROR IN  10
+?UNMATCHED BLOCK ERROR IN  10
 OK

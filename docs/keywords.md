@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE` and `?MISSING NEXT` added since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE` and the single `?UNMATCHED BLOCK` error added since.
 
 ## How the costs are measured
 
@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EE29 (without the 12-byte sim65 header) | 11818 |
+| sim image, $C000-$EDFF (without the 12-byte sim65 header) | 11776 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4310 |
-| new keywords (all items in "New keywords" below) | 1637 |
+| free | 4352 |
+| new keywords (all items in "New keywords" below) | 1595 |
 | speed-ups and internals (all items in "Internals" below) | 731 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -38,7 +38,7 @@ Segments of the sim image:
 | CODE | 7773 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2282 |
+| EXTRA (sim I/O and most of our additions) | 2240 |
 | IORAM | 634 |
 
 ## Keyword table
@@ -89,7 +89,7 @@ built from existing tokens, so they need no table entries.
 
 | Keywords | Flag | Bytes |
 |---|---|---|
-| `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]`, `CONTINUE` | `CONFIG_BLOCK` | 348 |
+| `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]`, `CONTINUE` | `CONFIG_BLOCK` | 306 |
 | `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 179 |
 | `INSTR([start,] a$, b$)` | `CONFIG_INSTR` | 167 |
 | `a MOD b` | `CONFIG_MOD` | 160 |
@@ -102,7 +102,7 @@ built from existing tokens, so they need no table entries.
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1637** |
+| **Total** | | **1595** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 

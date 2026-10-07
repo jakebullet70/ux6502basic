@@ -540,3 +540,14 @@ late cost more than one made early. Now the address of each variable's entry is 
   `?MISSING DO/LOOP` (new message in the extra error table of `handle_io.s`, 12 bytes, plus 4
   bytes of code). The variable after `NEXT` is not checked by the scan.
 - Net: 8 bytes saved, 16 spent, image 8 bytes larger (11818). `tests/continue.out` updated.
+
+## block.s: one ?UNMATCHED BLOCK error (42 bytes saved)
+
+- `?MISSING END IF`, `?MISSING DO/LOOP` and `?MISSING NEXT` are replaced by one message,
+  `?UNMATCHED BLOCK ERROR`, in the extra error table of `handle_io.s`. It covers a block IF
+  without END IF, DO without LOOP, LOOP, EXIT or CONTINUE without a loop, and CONTINUE in a FOR
+  loop without NEXT. Text: 41 bytes down to 15.
+- The end-of-program path of the scan no longer picks a message from `BLK_MODE`; it branches
+  straight to the error exit (`BLK_NODO`). The 16-byte `@missing` code and `BLK_ERR` are gone.
+- Net: 42 bytes saved, image 11776 bytes. `tests/block.out`, `tests/do.out` and
+  `tests/continue.out` updated.

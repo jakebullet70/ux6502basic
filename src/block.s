@@ -150,8 +150,8 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
 @next:
         iny
         bne     @loop		; always (a line is shorter than 256 bytes)
-:       ldx     #HIO_ERR_DOLOOP	; BLK_NODO
-        jmp     HIO_ERROR	; BLK_ERR
+:       ldx     #HIO_ERR_BLOCK	; BLK_NODO
+        jmp     HIO_ERROR
 @else:
         ldx     BLK_DEPTH
         bne     @last
@@ -177,7 +177,7 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
         jsr     ADDON		; TXTPTR at the end of the line
         ldy     #2
         lda     (TXTPTR),y
-        beq     @missing	; end of the program
+        beq     BLK_NODO	; end of the program
         iny
         lda     (TXTPTR),y
         sta     CURLIN
@@ -188,15 +188,6 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
         sta     BLK_LAST
         iny
         bne     @loop		; always
-@missing:
-        ldx     #HIO_ERR_NEXT
-        lda     BLK_MODE
-        cmp     #TOKEN_NEXT
-        beq     BLK_ERR
-        cmp     #TOKEN_LOOP
-        beq     BLK_NODO
-        ldx     #HIO_ERR_ENDIF	; 0 or TOKEN_ELSE
-        bne     BLK_ERR		; always
 @exit:					; BLK_MODE closes a loop, the token before it opens one
         cmp     BLK_MODE	; (DO LOOP, FOR NEXT)
         beq     @close
@@ -214,4 +205,3 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
 ; The error exit in the middle of the scan has no name, because a named label
 ; there would end the scope of its @ labels.
 BLK_NODO = :-
-BLK_ERR = BLK_NODO+2
