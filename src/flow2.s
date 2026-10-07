@@ -45,6 +45,12 @@ GOTO:
         jmp     GOTO_CACHED
 GOTO_SLOW:
 .endif
+.ifdef CONFIG_LABELS
+        bcc     L27FA		; a digit: line number
+        jsr     LABEL_FIND	; carry set
+        bcs     GOTO_FOUND	; always
+L27FA:
+.endif
         jsr     LINGET
         jsr     REMN
         lda     CURLIN+1
@@ -68,6 +74,7 @@ L280D:
         jsr     FL1
         bcc     UNDERR
 .endif
+GOTO_FOUND:
         lda     LOWTRX
         sbc     #$01
         sta     TXTPTR
@@ -218,7 +225,11 @@ L28A4:
         jmp     EXECUTE_STATEMENT1
 L28AC:
         jsr     CHRGET
+.ifdef CONFIG_LABELS
+        jsr     LABEL_ONSKIP	; line number or label
+.else
         jsr     LINGET
+.endif
         cmp     #$2C
         beq     L28A4
         pla

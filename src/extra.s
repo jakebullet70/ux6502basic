@@ -50,6 +50,10 @@
 .include "radixlit.s"
 .endif
 
+.ifdef CONFIG_LABELS
+.include "labels.s"
+.endif
+
 .ifdef CONFIG_GOTO_CACHE
 .include "gotocache.s"
 .endif

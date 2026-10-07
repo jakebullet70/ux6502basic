@@ -18,7 +18,11 @@
 		keyword_rts "GOTO", GOTO, TOKEN_GOTO
 		keyword_rts "RUN", RUN
 		keyword_rts "IF", IF, TOKEN_IF
+.ifdef CONFIG_LABELS
+		keyword_rts "RESTORE", RESTORE_STMT
+.else
 		keyword_rts "RESTORE", RESTORE
+.endif
 		keyword_rts "GOSUB", GOSUB, TOKEN_GOSUB
 		keyword_rts "RETURN", POP
 .ifdef APPLE

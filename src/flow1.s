@@ -172,7 +172,11 @@ EXEC_CHRGET:
 
 .ifdef CONFIG_11
 LET1:
+  .ifdef CONFIG_LABELS
+        jmp     LABEL_SKIP	; a label or an assignment
+  .else
         jmp     LET
+  .endif
 
 COLON:
         cmp     #$3A

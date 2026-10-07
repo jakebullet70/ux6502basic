@@ -27,6 +27,7 @@ CONFIG_BITFN := 1 ; XOR, SHL and SHR functions (bitfn.s)
 CONFIG_DEEK := 1 ; DEEK function and DOKE statement (deek.s)
 CONFIG_POS_LINE := 1 ; POS(1) gives the cursor line; a new line clears POSX
 CONFIG_PEEK_SAVE_LINNUM := 1 ; PEEK keeps LINNUM, so POKE A,PEEK(B) works
+CONFIG_LABELS := 1 ; GOTO name, GOSUB name, RESTORE name with "name:" lines (labels.s)
 CONFIG_GOTO_CACHE := 1 ; cache GOTO/GOSUB targets (gotocache.s)
 CONFIG_VAR_CACHE := 1 ; cache simple variable addresses (varcache.s)
 

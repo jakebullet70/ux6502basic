@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)` and the removal of `SPC(` since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT`, the shared CHR$ stub, `CONTINUE`, the single `?UNMATCHED BLOCK` error, `?FILE MODE`, the shared `?FILE` prefix, `POS(1)`, labels and the removal of `SPC(` since.
 
 ## How the costs are measured
 
@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EDDB (without the 12-byte sim65 header) | 11740 |
+| sim image, $C000-$EE65 (without the 12-byte sim65 header) | 11878 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4388 |
-| new keywords (all items in "New keywords" below) | 1595 |
+| free | 4250 |
+| new keywords (all items in "New keywords" below) | 1733 |
 | speed-ups and internals (all items in "Internals" below) | 728 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -35,10 +35,10 @@ Segments of the sim image:
 | VECTORS (dispatch tables) | 169 |
 | KEYWORDS (keyword names) | 324 |
 | ERROR (error messages) | 249 |
-| CODE | 7774 |
+| CODE | 7781 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2207 |
+| EXTRA (sim I/O and most of our additions) | 2338 |
 | IORAM | 634 |
 
 ## Keyword table
@@ -91,6 +91,7 @@ built from existing tokens, so they need no table entries.
 | Keywords | Flag | Bytes |
 |---|---|---|
 | `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]`, `CONTINUE` | `CONFIG_BLOCK` | 306 |
+| labels: `name:` lines, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (no keyword) | `CONFIG_LABELS` | 138 |
 | `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 179 |
 | `INSTR([start,] a$, b$)` | `CONFIG_INSTR` | 167 |
 | `a MOD b` | `CONFIG_MOD` | 160 |
@@ -103,7 +104,7 @@ built from existing tokens, so they need no table entries.
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1595** |
+| **Total** | | **1733** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 
@@ -132,10 +133,9 @@ guesses until the code is written.
 |---|---|---|---|---|
 | `MEMCPY`, `MEMSET` (deferred) | 1 | 16 | 90 | 106 |
 | `'` as short `REM` (no table entry) | 1 | 0 | 15 | 15 |
-| labels: `GOTO name`, `GOSUB name`, `name:` (no keyword) | 2A | 0 | 150 | 150 |
 | `SUB` / `END SUB`, `CALL`, `LOCAL` | 2B | 18 | 600 | 618 |
 | `FUNCTION` / `END FUNCTION` | 2C | 10 | 400 | 410 |
-| **Total** | | **44** | **1255** | **1299** |
+| **Total** | | **44** | **1105** | **1149** |
 
 Real integer math (TODO 3) adds no keywords but a large amount of code; inline assembly (TODO 4)
 is still an open design. With the estimates above, about 3000 bytes of the 16128-byte ROM space

@@ -590,3 +590,31 @@ late cost more than one made early. Now the address of each variable's entry is 
   screen call. `TEXTAT` does not move the cursor, so it does not change either value.
 - Net: 10 bytes more, image 11740 bytes. New test `tests/pos`. `arith`, `arrays`, `files`,
   `strings` and `textat` expected outputs updated: comma zones and `POS(0)` are now right.
+
+## Labels (138 bytes)
+
+- New flag `CONFIG_LABELS` (sim build), code in `labels.s`, included from `extra.s`. A label is
+  a name and a colon at the start of a line: `100 MAIN:` or `100 MAIN: PRINT X`. `GOTO name`,
+  `GOSUB name`, `RUN name`, `RESTORE name` and `ON x GOTO/GOSUB a,200,b` take labels.
+- Names: a letter, then letters, digits and keywords. The tokenizer crunches keywords inside
+  names (`MYPRINT` is stored as `MY` and the PRINT token), and the search compares the stored
+  bytes, so such names still match. All characters count. A name must not start with a
+  keyword: `TOTAL` is stored as TO+`TAL`, and `PRINTIT:` is the statement `PRINT IT:`.
+- `LABEL_FIND` walks the program from `TXTTAB` and compares the name at `TXTPTR` with the start
+  of each line, from the colon backwards. `INDEX` is set to `TXTPTR`-4 so one Y index reaches
+  both texts. It returns the line in `LOWTR` or raises ?UNDEF'D STATEMENT.
+- `GOTO_SLOW` (`flow2.s`): when the target does not start with a digit, it calls `LABEL_FIND`
+  and joins the line-number path at the new label `GOTO_FOUND`. The GOTO cache works on labels
+  unchanged, because its key is the address of the target text.
+- Executing a label: `LET1` (`flow1.s`) now jumps to `LABEL_SKIP`. A statement that starts with
+  a letter is a label when it reaches `:` before an `=` token or any character below `0`; then
+  TXTPTR moves to the colon. Otherwise it goes on to `LET`. Every assignment pays this short
+  look-ahead.
+- `ON`: `LINGET` in the list loop is replaced by `LABEL_ONSKIP`, which skips any target up to
+  `,` or the end of the statement.
+- `RESTORE`: the keyword entry points to `RESTORE_STMT` (`token.s`). Without an argument it is
+  the old `RESTORE` (which `CLEARC` still calls); with a name it sets `DATPTR` to the byte in
+  front of the label line and skips the name.
+- Not done: `IF c THEN name` runs the label as a statement and does nothing; write
+  `THEN GOTO name`.
+- Net: 138 bytes (CODE 7, EXTRA 131), image 11878 bytes. New test `tests/labels`.

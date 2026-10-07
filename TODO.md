@@ -29,6 +29,10 @@ keyword table entry, the token test in PRINT and the column code. `RPT$(32,n-POS
 `TEXTAT` do the same job. Unlike `TAB(`, `RPT$` gives an error when the cursor is already past
 column n, so decide first whether that matters.
 
+Bug from Microsoft BASIC: `READ` misses a `DATA` statement that follows `:` and a space
+(`10 X=1: DATA 5` gives ?OUT OF DATA). `FINDATA` in `input.s` compares the byte right after
+the colon with the DATA token and does not skip spaces. `X=1:DATA 5` works.
+
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.
 
@@ -37,7 +41,8 @@ still to be decided.
 QBasic-style syntax, matching the block `IF` and `DO` already in place. Three phases:
 
 - **A. Labels.** `GOTO name` / `GOSUB name` with `name:` label lines. Reuses the GOTO cache.
-  Small change, most of the readability gain.
+  Done (`CONFIG_LABELS`): also `RUN name`, `RESTORE name` and names in `ON` lists. Not done:
+  `THEN name` (`IF c THEN name` silently does nothing; write `THEN GOTO name`).
 - **B. SUB.** `SUB name(a,b$)` ... `END SUB`, `CALL name(args)`, `LOCAL v,...`. The first call
   scans for the SUB and caches its address; normal flow skips SUB bodies. Parameters and LOCAL
   use save/restore (old values pushed on entry, restored on exit, like `DEF FN` does for its one
