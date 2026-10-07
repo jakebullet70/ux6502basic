@@ -664,3 +664,20 @@ of a keyword match in `PARSE_INPUT_LINE` (`program.s`):
 - Labels may now start with a keyword (`TOTAL:`).
 - Net: 25 bytes (CODE), image 11912 bytes. `tests/names` covers `TOTAL`, `ONE`, `ENDX`,
   `FORMAT` and `NEXTI`.
+
+## PAUSE statement (54 bytes)
+
+`PAUSE [n]` waits n+1 jiffies (1/60 s), like `SLEEP` on the X16: `PAUSE` and `PAUSE 0` wait for
+the next jiffy, `PAUSE 60` about a second. n is 0 to 65535 (`GETADR`), so a negative or larger
+value gives ?ILLEGAL QUANTITY.
+
+- New file `pause.s` (`CONFIG_PAUSE`). The keyword sits after `TEXTAT` in the statement part of
+  the table, so `TAB(` and every token after it move up by one.
+- The count goes in `LINNUM`. `PHP`/`PLP` keep the Z flag from `CHRGOT` across the zeroing, so
+  no argument means 0 without a second `CHRGOT` (saves 1 byte).
+- Waiting for one jiffy is a new target primitive, `K_JIFFY`, which may change X and Y. The sim
+  has no clock in sim65 2.19, so `K_JIFFY` in `sim_extra.s` is a busy loop of about 16700 cycles
+  (one jiffy at 1 MHz); real time depends on how fast sim65 runs. The new kernal port must wait
+  for the next VSYNC there.
+- `ISCNTC` runs every jiffy, so the break key can stop a long pause on a target that has one.
+- Net: 54 bytes (5 keyword, 2 dispatch, 47 EXTRA), image 11966 bytes. New test `tests/pause`.

@@ -139,6 +139,19 @@ K_WRITE:
 @skip:
         rts
 
+.ifdef CONFIG_PAUSE
+; Waits one jiffy (1/60 s) for PAUSE. sim65 has no clock, so this is a busy
+; loop of about 16700 cycles (one jiffy at 1 MHz). Changes X and Y.
+K_JIFFY:
+        ldx     #13
+@loop:
+        dey
+        bne     @loop
+        dex
+        bne     @loop
+        rts
+.endif
+
 ; open(name, flags): cc65 calls open() as a variadic function, so the
 ; parameters are on the C stack and Y holds their size in bytes.
 ; Read: O_RDONLY. Write: O_WRONLY|O_CREAT|O_TRUNC. Append: O_WRONLY|O_CREAT|O_APPEND.

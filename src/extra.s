@@ -42,6 +42,9 @@
 .ifdef CONFIG_DEEK
 .include "deek.s"
 .endif
+.ifdef CONFIG_PAUSE
+.include "pause.s"
+.endif
 
 .ifdef CONFIG_BITFN
 .include "bitfn.s"

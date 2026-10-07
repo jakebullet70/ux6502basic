@@ -97,6 +97,9 @@
 .ifdef CONFIG_TEXTAT
 		keyword_rts "TEXTAT", TEXTAT
 .endif
+.ifdef CONFIG_PAUSE
+		keyword_rts "PAUSE", PAUSE
+.endif
 
 		count_tokens
 
