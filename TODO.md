@@ -66,6 +66,20 @@ bytes and calling SYS. The design is still open: the syntax, where the code is s
 assembled, and how variables reach the code (registers, a parameter block, or variable
 addresses).
 
+`CONST` is parked here. A proposal for typed constants (`CONST BYTE/WORD/INT/FLOAT/STRING
+name = value`) was looked at and set aside: `BYTE` and `WORD` are meant for this item, so typed
+declarations belong to its design. What stands in the way of a plain `CONST`:
+
+- Only 2 characters of a variable name count, so `COLOR` and `COLORRAM` are the same variable.
+  Long constant names would need their own lookup, for example a scan of the program text like
+  `LABEL_FIND`, with a cache (guess: 120-180 bytes).
+- `PI` is a keyword, so no constant can be named `PI`.
+- No speed gain: a constant is read like a variable, and the variable cache already makes that
+  fast. Every expression runs on floats, so a `WORD` type only adds a range check.
+- The cheap form is a read-only variable (about 50-70 bytes): constants at the start of the
+  variable table, a pointer to their end, and an error when an assignment hits one. All `CONST`s
+  must run before any other variable is created. It adds safety only.
+
 ## 5. User reference of working commands
 
 There is no user-facing list of what works yet: `CLAUDE.md` names the features briefly for
