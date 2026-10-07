@@ -11,6 +11,10 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
 - Use `git mv` / `git rm` for tracked files.
 - Log every change to `src/` (what and why) in `docs/changes.md`, in the same commit.
 - ROM space is tight. With every change, suggest ways to save bytes (in that code or nearby).
+- Compatibility with CBM BASIC does not matter for the `sim` and new-kernal builds: keywords,
+  tokens and behavior may change or go away if that saves bytes or helps. Old CBM programs and
+  saved tokenized files need not run. The `cbmbasic1`/`cbmbasic2` builds must still pass
+  `make verify`, so put such changes behind an `.ifdef` in shared sources.
 
 ## Tools (not on PATH)
 
