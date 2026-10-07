@@ -765,15 +765,14 @@ strings and the "WRITTEN BY" message that answering `A` to MEMORY SIZE? prints.
   `COLD_START`.
 - Net: 66 bytes (all INIT), image 12058 bytes. Output does not change.
 
-## Sim: banner first, fewer blank lines at startup (saves 2 bytes)
+## Sim: banner and free count on one line, fewer blank lines at startup (saves 2 bytes)
 
 The start-up output was a blank line, the free count, two blank lines, the banner, a blank line
 and OK, because the Microsoft code prints the count before the banner. The sim now prints:
 
 ```
-UX6502BASIC V0.1
+UX6502BASIC V0.1 - 48127 BYTES FREE
 
- 48127 BYTES FREE
 OK
 ```
 
@@ -781,7 +780,7 @@ OK
   (`.ifndef SIM`).
 - The sim prints `QT_BASIC` with STROUT where the other targets call CRDO, as CBM2 does
   (`.if .def(CBM2) || .def(SIM)`).
-- `QT_BASIC` for the sim is the banner followed by CR LF CR LF. `QT_BYTES_FREE` ends with only
-  its 0, like Apple, since RESTART starts OK on a new line.
+- `QT_BASIC` for the sim is `"UX6502BASIC V0.1 -",0`; LINPRT puts a space before the number.
+  `QT_BYTES_FREE` ends with CR LF and its 0; RESTART adds the blank line before OK.
 - Net: 2 bytes (INIT), image 12056 bytes. All `tests/*.out` files change in their first lines
   only.

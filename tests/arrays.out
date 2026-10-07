@@ -1,6 +1,5 @@
-UX6502BASIC V0.1
+UX6502BASIC V0.1 - 48127 BYTES FREE
 
- 48127 BYTES FREE
 OK
 10 dim a(20), n$(3)
 20 for i=0 to 20: a(i)=i*i: next

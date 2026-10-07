@@ -1,6 +1,5 @@
-UX6502BASIC V0.1
+UX6502BASIC V0.1 - 48127 BYTES FREE
 
- 48127 BYTES FREE
 OK
 print 2+3*4, (2+3)*4, 7/2, 2^10
  14            20            3.5           1024

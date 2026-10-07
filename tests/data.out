@@ -1,6 +1,5 @@
-UX6502BASIC V0.1
+UX6502BASIC V0.1 - 48127 BYTES FREE
 
- 48127 BYTES FREE
 OK
 10 read a, b$, c
 20 print a; b$; c
