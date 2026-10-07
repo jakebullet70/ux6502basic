@@ -36,6 +36,19 @@ the colon with the DATA token and does not skip spaces. `X=1:DATA 5` works.
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.
 
+Deferred: far memory through `PEEK` and `POKE`, to revisit. Addresses go up to 24 bits:
+0-$FFFF is normal CPU memory, read and written directly as now; from $10000 up the high byte is
+a bank, reached through one kernal call that decides what each bank is (video memory, banked
+RAM). `K_VPEEK`/`K_VPOKE` become `K_FARPEEK`/`K_FARPOKE` with the same registers, and the
+`VPEEK`/`VPOKE` keywords and `vera.s` go away (80 bytes). A shared converter (`GETFAR`: `LINNUM`
+plus a bank byte, about 25 bytes) and two byte routines (about 20 bytes) serve `PEEK`, `POKE`,
+`DEEK` and `DOKE`, so `DOKE $1F000,N` writes a word to video memory; a word access needs an
+address increment that carries into the bank. `GETADR` stays for `SYS` and `WAIT`. Estimated net
+saving about 30 bytes. Open points: whether the sim gets a small real far bank for tests (about
+30 bytes, sim only; the stubs return 0 now), whether to keep `DEEK`/`DOKE` (80 bytes;
+`PEEK(A)+256*PEEK(A+1)` does the same), and whether memory-mapped ports on the new hardware make
+all of this unnecessary.
+
 ## 2. Labels, SUB and FUNCTION
 
 QBasic-style syntax, matching the block `IF` and `DO` already in place. Three phases:
