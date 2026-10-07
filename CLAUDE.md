@@ -27,8 +27,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
 
 ## Layout
 
-- `src/`: ca65 sources, forked from mist64/msbasic (2-clause BSD, see `src/README-msbasic.md`).
-  One `msbasic.s` builds every target; `-D <target>` picks it, `<target>.cfg` sets the memory map.
+- `src/`: ca65 sources, forked from mist64/msbasic (2-clause BSD, `LICENSE-msbasic`;
+  our changes are MIT, `LICENSE`). One `msbasic.s` builds every target; `-D <target>` picks it, `<target>.cfg` sets the memory map.
   Targets: `cbmbasic1` and `cbmbasic2` (checked against the ROM dumps; BASIC 2 runs in xpet) and
   `sim`. The other upstream targets were removed; their `.ifdef` code in the shared sources stays.
 - `Makefile` (run in Git Bash): `make all`, `make <target>`, `make test` (see `tests/`), `make verify` (byte-compare with the

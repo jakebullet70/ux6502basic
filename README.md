@@ -1,4 +1,4 @@
-# ux6502basic
+# ux6502Basic
 
 Microsoft BASIC for the 6502, brought forward from its 1978 source and extended for new 6502
 hardware with a new Unix-style kernal. This code is an exercise at the moment; maybe something
@@ -95,7 +95,9 @@ git clone https://github.com/mist64/msbasic.git ref/msbasic
 
 - `m6502.asm`: Microsoft Corporation, MIT license (`LICENSE-microsoft`). Microsoft's notes on
   the source are in `docs/README-microsoft.md`.
-- `src/`: Michael Steil and the msbasic contributors, 2-clause BSD (`LICENSE`,
-  `src/README-msbasic.md`). Our changes use the same license.
+- `src/`: forked from msbasic by Michael Steil and the msbasic contributors, 2-clause BSD
+  (`LICENSE-msbasic`, `src/README-msbasic.md`).
+- ux6502Basic, our changes and new files: Copyright (c) 2026 Steven De George SR, MIT license
+  (`LICENSE`).
 
 This project is not affiliated with Microsoft or Commodore.

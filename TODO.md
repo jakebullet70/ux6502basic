@@ -1,6 +1,6 @@
 # TODO
 
-Planned work for ux6502basic. Items are done in order unless noted. Each `src/` change is logged
+Planned work for ux6502Basic. Items are done in order unless noted. Each `src/` change is logged
 in `docs/changes.md` and gets a test in `tests/`.
 
 ## 1. New functions and literals
