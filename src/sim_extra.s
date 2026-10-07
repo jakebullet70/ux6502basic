@@ -152,6 +152,16 @@ K_JIFFY:
         rts
 .endif
 
+.ifdef CONFIG_VERA
+; Video memory stubs for VPEEK and VPOKE: the sim has no video chip.
+; K_VPEEK: A = bank, LINNUM = address; returns the byte in A (always 0).
+; K_VPOKE: A = bank, LINNUM = address, X = byte; does nothing.
+K_VPEEK:
+        lda     #$00
+K_VPOKE:
+        rts
+.endif
+
 ; open(name, flags): cc65 calls open() as a variadic function, so the
 ; parameters are on the C stack and Y holds their size in bytes.
 ; Read: O_RDONLY. Write: O_WRONLY|O_CREAT|O_TRUNC. Append: O_WRONLY|O_CREAT|O_APPEND.

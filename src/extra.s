@@ -45,6 +45,9 @@
 .ifdef CONFIG_PAUSE
 .include "pause.s"
 .endif
+.ifdef CONFIG_VERA
+.include "vera.s"
+.endif
 
 .ifdef CONFIG_BITFN
 .include "bitfn.s"

@@ -358,6 +358,12 @@ L2D39:
         jmp     BITFN
 L2D3A:
 .endif
+.ifdef CONFIG_VERA
+        cmp     #TOKEN_VPEEK
+        bne     L2D3B
+        jmp     VPEEK
+L2D3B:
+.endif
         jsr     ISLETC
         bcs     FRM_VARIABLE
 .ifdef CONFIG_CBM_ALL

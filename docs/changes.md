@@ -687,3 +687,23 @@ value gives ?ILLEGAL QUANTITY.
 `PAUSE` without a number now gives ?SYNTAX ERROR (from `FRMNUM`) instead of waiting one jiffy;
 write `PAUSE 0` for that. This drops the `PHP`/`PLP` test and the zeroing of `LINNUM` (10
 bytes). PAUSE now costs 44 bytes, image 11956 bytes. The test types `PAUSE` to check the error.
+
+## VPEEK and VPOKE for video memory (80 bytes)
+
+`VPEEK(bank, addr)` reads and `VPOKE bank, addr, n` writes a byte of video memory, with the same
+syntax as on the X16. bank and n are 0 to 255 (`GETBYT`), addr is 0 to 65535 (`GETADR`); the
+target decides what a bank means.
+
+- New file `vera.s` (`CONFIG_VERA`). `VPOKE` is a statement keyword after `PAUSE`, `VPEEK` a
+  function keyword after `SHR`, so tokens shift again (95 tokens, $80-$DE).
+- Video memory is reached through two new target primitives: `K_VPEEK` (A = bank, `LINNUM` =
+  address, returns the byte in A) and `K_VPOKE` (the same, with the byte in X). The sim has no
+  video chip, so in `sim_extra.s` `K_VPEEK` returns 0 and `K_VPOKE` does nothing. The new kernal
+  port must supply real ones.
+- `VPEEK` takes two arguments, so `FRM_ELEMENT` dispatches it by token, like `XOR`. The test sits
+  before `ISLETC`, because between `ISLETC` and `FRM_VARIABLE` a `BCS` is already near the end of
+  its range.
+- `VPEEK` keeps `LINNUM`, like `PEEK` and `DEEK`, so `VPOKE B,A,VPEEK(B,C)` works. `VPOKE` ends in
+  `GTNUM` (address and byte), the same parser `POKE` uses.
+- Net: 80 bytes (10 keywords, 2 dispatch, 7 in `FRM_ELEMENT`, 61 EXTRA with the 3-byte stubs),
+  image 12036 bytes. New test `tests/vera`.

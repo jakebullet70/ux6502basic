@@ -100,6 +100,9 @@
 .ifdef CONFIG_PAUSE
 		keyword_rts "PAUSE", PAUSE
 .endif
+.ifdef CONFIG_VERA
+		keyword_rts "VPOKE", VPOKE
+.endif
 
 		count_tokens
 
@@ -202,6 +205,9 @@ UNFNC_ATN:
 		keyword	"XOR", TOKEN_XOR
 		keyword	"SHL", TOKEN_SHL
 		keyword	"SHR", TOKEN_SHR
+.endif
+.ifdef CONFIG_VERA
+		keyword	"VPEEK", TOKEN_VPEEK
 .endif
 .ifdef CONFIG_2
 		keyword	"GO", TOKEN_GO
