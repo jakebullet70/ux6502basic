@@ -86,6 +86,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
 - `docs/changes.md`: log of our changes to the msbasic sources.
 - `docs/keywords.md`: every keyword, done and planned, with its cost in bytes and the totals.
   Update it when a keyword is added.
+- `docs/sub-function.md`, `docs/inline-asm.md`: design notes, byte estimates and plans for TODO 2
+  (SUB, FUNCTION) and TODO 4 (inline assembly).
 - `docs/review-superbasic-ehbasic.md`: design lessons from F256 SuperBASIC, EhBASIC and
   picocomputer/msbasic (line input, file I/O, kernal interface, extensions).
 - `docs/asm/`: 6502 notes (NMOS rules, ca65) and the 65C02 instruction reference.

@@ -51,7 +51,8 @@ all of this unnecessary.
 
 ## 2. Labels, SUB and FUNCTION
 
-QBasic-style syntax, matching the block `IF` and `DO` already in place. Three phases:
+QBasic-style syntax, matching the block `IF` and `DO` already in place. Design notes and byte
+estimates: `docs/sub-function.md`. Three phases:
 
 - **A. Labels.** `GOTO name` / `GOSUB name` with `name:` label lines. Reuses the GOTO cache.
   Done (`CONFIG_LABELS`): also `RUN name`, `RESTORE name` and names in `ON` lists. Not done:
@@ -77,7 +78,7 @@ change to the expression evaluator for a modest gain, so it comes after the item
 Put 6502 code inside a BASIC program and pass BASIC variables in and out, instead of POKEing
 bytes and calling SYS. The design is still open: the syntax, where the code is stored or
 assembled, and how variables reach the code (registers, a parameter block, or variable
-addresses).
+addresses). Design notes, byte estimates and the open decisions: `docs/inline-asm.md`.
 
 `CONST` is parked here. A proposal for typed constants (`CONST BYTE/WORD/INT/FLOAT/STRING
 name = value`) was looked at and set aside: `BYTE` and `WORD` are meant for this item, so typed
