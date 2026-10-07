@@ -99,7 +99,9 @@
 		keyword	"TAB(", TOKEN_TAB
 		keyword	"TO", TOKEN_TO
 		keyword	"FN", TOKEN_FN
+.ifndef CONFIG_NO_SPC
 		keyword	"SPC(", TOKEN_SPC
+.endif
 		keyword	"THEN", TOKEN_THEN
 		keyword	"NOT", TOKEN_NOT
 		keyword	"STEP", TOKEN_STEP

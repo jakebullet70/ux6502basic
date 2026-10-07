@@ -11,6 +11,7 @@ CONFIG_FILE := 1 ; PRINT#, INPUT#, GET#, CMD, OPEN, CLOSE, SYS
 CONFIG_HANDLE_IO := 1 ; files and console through handles (handle_io.s)
 CONFIG_BLOCK := 1 ; block IF/ELSE/END IF, DO/LOOP (block.s); needs CONFIG_HANDLE_IO
 CONFIG_NO_LET := 1 ; no LET keyword (A=1 still works); keeps the keyword table small
+CONFIG_NO_SPC := 1 ; no SPC( (RPT$(32,n) does the same)
 CONFIG_KW16 := 1 ; tokenizer and LIST walk the keyword table with KW_PTR (any length)
 CONFIG_FAST_FIN := 1 ; FIN reads digits as an integer and floats it once
 CONFIG_SAFE_NAMENOTFOUND := 1 ; check both bytes of PTRGET's caller

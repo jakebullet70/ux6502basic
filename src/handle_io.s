@@ -114,11 +114,8 @@ HIO_FREE:
 HIO_NOTOPEN:
         ldx     #HIO_ERR_NOTOPEN
         .byte   $2C
-HIO_NOTIN:
-        ldx     #HIO_ERR_NOTIN
-        .byte   $2C
-HIO_NOTOUT:
-        ldx     #HIO_ERR_NOTOUT
+HIO_BADMODE:
+        ldx     #HIO_ERR_MODE
 
 HIO_ERROR:
         lsr     Z14
@@ -150,7 +147,7 @@ IO_CHKIN:
         jsr     HIO_FIND
         bmi     HIO_NOTOPEN
         lda     HIO_MODE,x
-        bne     HIO_NOTIN
+        bne     HIO_BADMODE	; not an input file
         stx     HIO_IN
         ldx     HIO_XSAVE
         rts
@@ -162,7 +159,7 @@ IO_CHKOUT:
         jsr     HIO_FIND
         bmi     HIO_NOTOPEN
         lda     HIO_MODE,x
-        beq     HIO_NOTOUT
+        beq     HIO_BADMODE	; not an output file
         lda     HIO_HND,x
         sta     HIO_OUT
         ldx     HIO_XSAVE
@@ -338,10 +335,8 @@ HIO_ERR_NOTOPEN = *-HIO_ERRORS
         htasc   "FILE NOT OPEN"
 HIO_ERR_NOTFOUND = *-HIO_ERRORS
         htasc   "FILE NOT FOUND"
-HIO_ERR_NOTIN = *-HIO_ERRORS
-        htasc   "NOT INPUT FILE"
-HIO_ERR_NOTOUT = *-HIO_ERRORS
-        htasc   "NOT OUTPUT FILE"
+HIO_ERR_MODE = *-HIO_ERRORS
+        htasc   "FILE MODE"
 HIO_ERR_TOOMANY = *-HIO_ERRORS
         htasc   "TOO MANY FILES"
 .ifdef CONFIG_BLOCK

@@ -551,3 +551,15 @@ late cost more than one made early. Now the address of each variable's entry is 
   straight to the error exit (`BLK_NODO`). The 16-byte `@missing` code and `BLK_ERR` are gone.
 - Net: 42 bytes saved, image 11776 bytes. `tests/block.out`, `tests/do.out` and
   `tests/continue.out` updated.
+
+## No SPC( and one ?FILE MODE error (36 bytes saved)
+
+- `SPC(` is removed from the sim build (`CONFIG_NO_SPC` in `defines_sim.s`). `RPT$(32,n)` prints
+  the same spaces. `token.s` drops the keyword (4 bytes; the tokens after it move down by one).
+  In `print.s`, PRINT no longer tests for `TOKEN_SPC` (5 bytes), and the shared TAB(/SPC( code
+  at `L29F5` no longer saves the token test in carry with `php`/`plp`/`bcc` (4 bytes): only TAB(
+  is left, and the carry is set by `cmp #')'`. 13 bytes. The CBM builds keep SPC(.
+- `?NOT INPUT FILE` and `?NOT OUTPUT FILE` in `handle_io.s` are replaced by one message,
+  `?FILE MODE ERROR`, raised from `HIO_BADMODE` (`HIO_MODE` is already the mode table). Text:
+  29 bytes down to 9, plus 3 bytes for the second entry point. 23 bytes.
+- Net: 36 bytes saved, image 11740 bytes. `tests/files.out` updated.

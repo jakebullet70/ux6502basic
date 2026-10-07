@@ -52,7 +52,7 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword
-  (`CONFIG_NO_LET`). The keyword table may pass 256 bytes
+  (`CONFIG_NO_LET`), no SPC( (`CONFIG_NO_SPC`; use `RPT$(32,n)`). The keyword table may pass 256 bytes
   (`CONFIG_KW16`).
 - I/O layer: the interpreter reaches files only through `IO_CHKIN`, `IO_CHKOUT`, `IO_CLRCH`,
   `IO_CHRIN`, `IO_CLALL`, plus `MONCOUT`, `MONRDKEY`, `ISCNTC`. `io.s` holds the register rules and

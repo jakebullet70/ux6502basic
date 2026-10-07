@@ -31,11 +31,13 @@ PRINT2:
 .endif
         cmp     #TOKEN_TAB
         beq     L29F5
+.ifndef CONFIG_NO_SPC
         cmp     #TOKEN_SPC
-.ifdef CONFIG_2
+  .ifdef CONFIG_2
         clc	; also AppleSoft II
-.endif
+  .endif
         beq     L29F5
+.endif
         cmp     #','
 ; Pre-KIM had no CLC. KIM added the CLC
 ; here. Post-KIM moved the CLC up...
@@ -202,8 +204,9 @@ L29EB:
         adc     #$01
         bne     L2A08
 L29F5:
-.ifdef CONFIG_11A
-        php
+.ifdef CONFIG_NO_SPC
+.elseif .def(CONFIG_11A)
+        php			; carry clear for SPC(, set for TAB(
 .else
         pha
 .endif
@@ -215,8 +218,10 @@ L29F5:
   .else
         jne     SYNERR
   .endif
+  .ifndef CONFIG_NO_SPC		; only TAB( is left, carry is set from the cmp
         plp
         bcc     L2A09
+  .endif
 .else
   .ifdef CONFIG_11
         jne     SYNERR
