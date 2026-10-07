@@ -349,4 +349,6 @@ HIO_ERR_ENDIF = *-HIO_ERRORS
         htasc   "MISSING END IF"
 HIO_ERR_DOLOOP = *-HIO_ERRORS
         htasc   "MISSING DO/LOOP"
+HIO_ERR_NEXT = *-HIO_ERRORS
+        htasc   "MISSING NEXT"
 .endif

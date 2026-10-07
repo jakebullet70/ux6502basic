@@ -16,6 +16,9 @@ Then `CONTINUE` in `FOR`/`NEXT` and `DO`/`LOOP` loops: it skips the rest of the 
 with the next pass, through the matching `NEXT` or `LOOP` (the counterpart of `EXIT DO`, in
 `block.s`). Done.
 
+Then `'` as a short form of `REM`: `' text` and `PRINT X: ' text` make the rest of the line a
+comment.
+
 Deferred: `MEMCPY` and `MEMSET` (block copy and fill). Argument order and overlapping copies are
 still to be decided.
 

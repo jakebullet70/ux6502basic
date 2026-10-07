@@ -19,9 +19,79 @@
 ;
 ; CONTINUE starts the next pass of the innermost loop. In a DO loop it works
 ; like LOOP. In a FOR loop it scans for the matching NEXT (FOR and NEXT are
-; counted like DO and LOOP) and runs it. NEXT I,J counts as one NEXT.
+; counted like DO and LOOP) and runs it. The variable after NEXT is not
+; checked, so NEXT I,J counts as one NEXT.
 
 .segment "EXTRA"
+
+; ----------------------------------------------------------------------------
+; "CONTINUE" STATEMENT: next pass of the innermost FOR or DO loop
+; ----------------------------------------------------------------------------
+CONTINUE:
+        lda     #0
+        sta     BLK_MODE
+        beq     BLK_FORPNT	; always; A = 0 matches the first FOR frame
+
+; ----------------------------------------------------------------------------
+; "EXIT" STATEMENT: EXIT [DO]. Drop the DO frame, go on after the matching LOOP
+; ----------------------------------------------------------------------------
+BLK_EXIT:
+        cmp     #TOKEN_DO	; EXIT DO: the DO is ignored
+        bne     @mode
+        jsr     CHRGET
+@mode:
+        lda     #TOKEN_LOOP
+        .byte   $2C
+
+; ----------------------------------------------------------------------------
+; "LOOP" STATEMENT: go back to the statement after DO
+; ----------------------------------------------------------------------------
+LOOP:
+        lda     #0
+        sta     BLK_MODE
+        lda     #$FF		; match no FOR frame
+BLK_FORPNT:
+        sta     FORPNT+1
+        jsr     GTFORPNT
+        beq     BLK_CONTF	; only CONTINUE (A = 0) finds a FOR frame
+        cmp     #TOKEN_DO
+        bne     BLK_NODO
+        txs			; drop the FOR frames above the DO frame
+        lda     BLK_MODE
+        beq     @loop
+        txa			; EXIT: drop the DO frame too
+        adc     #4		; carry is set: +5
+        tax
+        txs
+        bcc     BLK_SCAN	; always (the frame ends at $1FF or below)
+@loop:
+        pla			; pop the frame, DO pushes it again
+        pla
+        sta     CURLIN
+        pla
+        sta     CURLIN+1
+        pla
+        sta     TXTPTR
+        pla
+        sta     TXTPTR+1
+
+; ----------------------------------------------------------------------------
+; "DO" STATEMENT
+; ----------------------------------------------------------------------------
+DO:
+        lda     #$03
+        jsr     CHKMEM
+        lda     TXTPTR+1
+        pha
+        lda     TXTPTR
+        pha
+        lda     CURLIN+1
+        pha
+        lda     CURLIN
+        pha
+        lda     #TOKEN_DO
+        pha
+        jmp     NEWSTT
 
 ; ----------------------------------------------------------------------------
 ; "ELSE" STATEMENT: skip to the matching END IF
@@ -80,16 +150,17 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
 @next:
         iny
         bne     @loop		; always (a line is shorter than 256 bytes)
+:       ldx     #HIO_ERR_DOLOOP	; BLK_NODO
+        jmp     HIO_ERROR	; BLK_ERR
 @else:
         ldx     BLK_DEPTH
         bne     @last
 @found:
-        jsr     ADDON		; TXTPTR at the ELSE, IF, LOOP or NEXT token
-        ldx     BLK_MODE
-        cpx     #TOKEN_NEXT
+        cmp     #TOKEN_NEXT	; A = ELSE, IF, LOOP or NEXT
         beq     @run		; NEXT: run it
-        jsr     CHRGET
+        iny			; others: run what follows them
 @run:
+        jsr     ADDON
         jmp     L288D		; run the rest of the line
 @rem:
         sta     BLK_LAST	; IF c THEN REM is a one-line IF
@@ -118,12 +189,13 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
         iny
         bne     @loop		; always
 @missing:
-        lda     BLK_MODE	; 0 or TOKEN_ELSE: END IF is missing
-        beq     @noif
-        cmp     #TOKEN_ELSE
-        bne     BLK_NODO
-@noif:
-        ldx     #HIO_ERR_ENDIF
+        ldx     #HIO_ERR_NEXT
+        lda     BLK_MODE
+        cmp     #TOKEN_NEXT
+        beq     BLK_ERR
+        cmp     #TOKEN_LOOP
+        beq     BLK_NODO
+        ldx     #HIO_ERR_ENDIF	; 0 or TOKEN_ELSE
         bne     BLK_ERR		; always
 @exit:					; BLK_MODE closes a loop, the token before it opens one
         cmp     BLK_MODE	; (DO LOOP, FOR NEXT)
@@ -138,78 +210,8 @@ BLK_SCAN:				; BLK_MODE set: TOKEN_LOOP or TOKEN_NEXT
         beq     @next		; EXIT DO
         inc     BLK_DEPTH
         bne     @next		; always
-BLK_NODO:
-        ldx     #HIO_ERR_DOLOOP
-BLK_ERR:
-        jmp     HIO_ERROR
 
-; ----------------------------------------------------------------------------
-; "CONTINUE" STATEMENT: next pass of the innermost FOR or DO loop
-; ----------------------------------------------------------------------------
-CONTINUE:
-        lda     #0
-        sta     BLK_MODE
-        beq     BLK_FORPNT	; always; A = 0 matches the first FOR frame
-BLK_FOR:
-        jmp     BLK_CONTF
-
-; ----------------------------------------------------------------------------
-; "EXIT" STATEMENT: EXIT [DO]. Drop the DO frame, go on after the matching LOOP
-; ----------------------------------------------------------------------------
-BLK_EXIT:
-        cmp     #TOKEN_DO	; EXIT DO: the DO is ignored
-        bne     @mode
-        jsr     CHRGET
-@mode:
-        lda     #TOKEN_LOOP
-        .byte   $2C
-
-; ----------------------------------------------------------------------------
-; "LOOP" STATEMENT: go back to the statement after DO
-; ----------------------------------------------------------------------------
-LOOP:
-        lda     #0
-        sta     BLK_MODE
-        lda     #$FF		; match no FOR frame
-BLK_FORPNT:
-        sta     FORPNT+1
-        jsr     GTFORPNT
-        beq     BLK_FOR		; only CONTINUE (A = 0) finds a FOR frame
-        cmp     #TOKEN_DO
-        bne     BLK_NODO
-        txs			; drop the FOR frames above the DO frame
-        lda     BLK_MODE
-        beq     @loop
-        txa			; EXIT: drop the DO frame too
-        adc     #4		; carry is set: +5
-        tax
-        txs
-        jmp     BLK_SCAN
-@loop:
-        pla			; pop the frame, DO pushes it again
-        pla
-        sta     CURLIN
-        pla
-        sta     CURLIN+1
-        pla
-        sta     TXTPTR
-        pla
-        sta     TXTPTR+1
-
-; ----------------------------------------------------------------------------
-; "DO" STATEMENT
-; ----------------------------------------------------------------------------
-DO:
-        lda     #$03
-        jsr     CHKMEM
-        lda     TXTPTR+1
-        pha
-        lda     TXTPTR
-        pha
-        lda     CURLIN+1
-        pha
-        lda     CURLIN
-        pha
-        lda     #TOKEN_DO
-        pha
-        jmp     NEWSTT
+; The error exit in the middle of the scan has no name, because a named label
+; there would end the scope of its @ labels.
+BLK_NODO = :-
+BLK_ERR = BLK_NODO+2

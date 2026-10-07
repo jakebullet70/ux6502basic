@@ -523,3 +523,20 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 38 bytes (10 table, 28 code).
 - Test: `tests/continue.bas` (FOR and DO, nested loops of both kinds, inside a block IF, a REM
   that holds NEXT, in a one-line FOR, `CONT` still listed as `CONT`, errors).
+
+## block.s: 8 bytes saved, ?MISSING NEXT
+
+- `CONTINUE`, `EXIT`, `LOOP` and `DO` now come before the block scanner. `LOOP` reaches the
+  scanner's FOR entry (`BLK_CONTF`) with a branch, so the 3-byte `jmp` hop is gone. `EXIT`
+  jumps back into the scanner with `bcc` instead of `jmp` (the carry is always clear there,
+  since the DO frame ends at $1FF or below): 1 byte.
+- When the scan finds its token, it no longer reads `BLK_MODE` and calls `CHRGET`. The token is
+  still in A: for `NEXT` TXTPTR stays on it, so `L288D` runs `NEXT`; for the others `iny`
+  moves past the token and `L288D`'s `CHRGOT` skips the spaces: 4 bytes.
+- The error exit (`BLK_NODO`, `BLK_ERR`) sits in the middle of the scan, so both the scan and
+  `LOOP` reach it with branches. It has an unnamed label, because a named label there would end
+  the scope of the scan's `@` labels; `BLK_NODO = :-` names it at the end of the file.
+- A FOR loop with no `NEXT` after `CONTINUE` now gives `?MISSING NEXT ERROR` instead of
+  `?MISSING DO/LOOP` (new message in the extra error table of `handle_io.s`, 12 bytes, plus 4
+  bytes of code). The variable after `NEXT` is not checked by the scan.
+- Net: 8 bytes saved, 16 spent, image 8 bytes larger (11818). `tests/continue.out` updated.
