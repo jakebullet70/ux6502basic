@@ -498,3 +498,10 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 173 bytes in `textat.s`, 9 for the keyword.
 - Test: `tests/textat.bas` (string, code, color, empty string, `POS()` kept, expressions, inside
   a loop, `LIST`, errors).
+
+## Shared CHR$ stub (RPT$, TEXTAT)
+
+- `RPT$(code, n)` built its one-character string with its own copy of the `CHR$` code (18
+  bytes). It now calls `CHRSTUB` (`jsr CHRSTR`, in `rpt.s`), the same trick `TEXTAT` used.
+  `TEXTAT` uses that stub too and keeps its own copy only when `CONFIG_RPT` is off.
+- Saves 15 bytes in the sim image. Tests unchanged.

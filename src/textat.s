@@ -21,7 +21,7 @@ TEXTAT:
         jsr     FRMEVL
         bit     VALTYP
         bmi     L_TA1
-        jsr     L_TACHR		; code: make CHR$(code)
+        jsr     CHRSTUB		; code: make CHR$(code)
 L_TA1:
         lda     FAC_LAST-1	; keep the descriptor address
         pha
@@ -78,9 +78,12 @@ TA_PUTS:
 L_TA5:
         rts
 
-; CHRSTR DROPS ONE RETURN ADDRESS (UNARY'S), SO IT RETURNS TO OUR CALLER
-L_TACHR:
+.ifndef CONFIG_RPT
+; CHR$ AS A SUBROUTINE: CHRSTR DROPS ONE RETURN ADDRESS (UNARY'S), SO IT
+; RETURNS TO OUR CALLER. RPT.S HAS THE SAME STUB.
+CHRSTUB:
         jsr     CHRSTR
+.endif
 
 ; PRINT A AS THREE DECIMAL DIGITS
 TA_DEC:

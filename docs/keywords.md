@@ -1,7 +1,7 @@
 # Keywords and their cost in bytes
 
 All keywords of the `sim` build, done and planned, with the bytes each feature adds to the
-image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$` and `TEXTAT` added since.
+image. Measured on 2026-10-06 at commit a84799c; `UCASE$`, `LCASE$`, `TEXTAT` and the shared CHR$ stub added since.
 
 ## How the costs are measured
 
@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EE0A (without the 12-byte sim65 header) | 11787 |
+| sim image, $C000-$EDFB (without the 12-byte sim65 header) | 11772 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4341 |
-| new keywords (all items in "New keywords" below) | 1609 |
+| free | 4356 |
+| new keywords (all items in "New keywords" below) | 1591 |
 | speed-ups and internals (all items in "Internals" below) | 731 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -90,19 +90,19 @@ built from existing tokens, so they need no table entries.
 | Keywords | Flag | Bytes |
 |---|---|---|
 | `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]` | `CONFIG_BLOCK` | 302 |
-| `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 182 |
+| `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 179 |
 | `INSTR([start,] a$, b$)` | `CONFIG_INSTR` | 167 |
 | `a MOD b` | `CONFIG_MOD` | 160 |
 | `$FF`, `%1010` literals (no keyword) | `CONFIG_RADIX_LIT` | 147 |
 | integer digit reader that the literals need | `CONFIG_FAST_FIN` | 120 |
 | `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)` | `CONFIG_BITFN` | 128 |
-| `RPT$(a$ or code, n)` | `CONFIG_RPT` | 112 |
+| `RPT$(a$ or code, n)` | `CONFIG_RPT` | 97 |
 | `HEX$(n)`, `BIN$(n)` | `CONFIG_HEXBIN` | 108 |
 | `UCASE$(a$)`, `LCASE$(a$)` | `CONFIG_CASE` | 70 |
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1609** |
+| **Total** | | **1591** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 

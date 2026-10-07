@@ -11,15 +11,7 @@ RPTSTR:
         jsr     FRMEVL
         bit     VALTYP
         bmi     L_RPT1
-        jsr     CONINT		; C: make CHR$(C), then repeat it
-        txa
-        pha
-        lda     #$01
-        jsr     STRSPA
-        pla
-        ldy     #$00
-        sta     (FAC+1),y
-        jsr     PUTNEW
+        jsr     CHRSTUB		; C: make CHR$(C), then repeat it
 L_RPT1:
         lda     FAC_LAST-1	; keep the descriptor address
         pha
@@ -63,3 +55,8 @@ L_RPT4:
         bne     L_RPT4
 L_RPT5:
         jmp     PUTNEW
+
+; CHR$ AS A SUBROUTINE (ALSO USED BY TEXTAT). CHRSTR DROPS ONE RETURN
+; ADDRESS (UNARY'S), SO IT RETURNS TO OUR CALLER WITH THE DESCRIPTOR IN FAC.
+CHRSTUB:
+        jsr     CHRSTR
