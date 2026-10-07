@@ -446,7 +446,11 @@ L2498:
         beq     L2496
         cmp     #$80
         bne     L24D7
+.ifdef CONFIG_NAME_NOCRUNCH
+        beq     L24A6		; always: check the end of the name first
+.else
         ora     EOLPNTR
+.endif
 ; ----------------------------------------------------------------------------
 ; STORE CHARACTER OR TOKEN IN OUTPUT LINE
 ; ----------------------------------------------------------------------------
@@ -484,6 +488,30 @@ L24D0:
         sta     INPUTBUFFER-5,y
         inx
         bne     L24C8
+.ifdef CONFIG_NAME_NOCRUNCH
+L24A8:
+        lda     #$80
+        ora     EOLPNTR
+        bne     L24AA		; always
+; ----------------------------------------------------------------------------
+; A KEYWORD THAT ENDS IN A LETTER, WITH A LETTER BEHIND IT, IS THE START OF A
+; NAME: "TOTAL" IS NOT TO,TAL. TRY THE NEXT KEYWORD. "AND #$DF" MAKES a-z A-Z;
+; "AND #$5F" ALSO CLEARS BIT 7 OF THE LAST CHARACTER OF THE KEYWORD.
+; ----------------------------------------------------------------------------
+L24A6:
+        lda     INPUTBUFFERX+1,x
+        and     #$DF
+        jsr     ISLETC
+        bcc     L24A8
+  .ifdef CONFIG_KW16
+        lda     (KW_PTR),y
+  .else
+        lda     TOKEN_NAME_TABLE,y
+  .endif
+        and     #$5F
+        jsr     ISLETC
+        bcc     L24A8
+.endif
 ; ----------------------------------------------------------------------------
 ; ADVANCE POINTER TO NEXT TOKEN NAME
 ; ----------------------------------------------------------------------------

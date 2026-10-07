@@ -52,9 +52,9 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   `POS(1)` line (`CONFIG_POS_LINE`; the sim counts printed lines in `POSY`). Labels: `100 name:`
   at a line start, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (`labels.s`,
   `CONFIG_LABELS`). The tokenizer does not look for keywords inside a name: a letter right after
-  a letter is stored as it is (`CONFIG_NAME_NOCRUNCH`), so `BORDER` stays a name and `IFA=BTHEN`
-  needs spaces. A name must still not start with a keyword (`TOTAL` is `TO`,`TAL`). GOTO/GOSUB
-  targets are cached
+  a letter is stored as it is, and a keyword with a letter right behind it is not a keyword
+  (`CONFIG_NAME_NOCRUNCH`). So `BORDER` and `TOTAL` are names, and run-together code needs
+  spaces: `FOR I`, `IF A=B THEN`, `FN F(`, `END IF`. GOTO/GOSUB targets are cached
   (`gotocache.s`, `CONFIG_GOTO_CACHE`), and so are simple variable addresses (`varcache.s`,
   `CONFIG_VAR_CACHE`); `CLEARC` empties both caches. No LET keyword
   (`CONFIG_NO_LET`), no SPC( (`CONFIG_NO_SPC`; use `RPT$(32,n)`). The keyword table may pass 256 bytes

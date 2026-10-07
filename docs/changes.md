@@ -644,3 +644,23 @@ The tokenizer crunched keywords wherever they appeared, also inside names: `BORD
 - Labels keep working: `LABEL_FIND` compares raw bytes, and both the label line and the name
   after `GOTO` are now stored as plain letters.
 - Net: 21 bytes (CODE), image 11887 bytes. New test `tests/names`.
+
+## Names may start with a keyword (25 bytes)
+
+With the change above, a name still could not start with a keyword: `TOTAL` became `TO`,`TAL`,
+and `ONE`, `ENDX` and `FORMAT` broke the same way. `CONFIG_NAME_NOCRUNCH` now also checks the end
+of a keyword match in `PARSE_INPUT_LINE` (`program.s`):
+
+- When the keyword ends in a letter and a letter follows it, the match is the start of a name.
+  The search goes on with the next keyword (`GOTOX` tries `GOTO`, then `GO`), and when none fits,
+  the letter is stored as it is. `AND #$DF` makes the next character uppercase for `ISLETC`;
+  the last keyword character is read from the table with `AND #$5F`, which also clears bit 7.
+- The check sits behind the string copy loop, outside the tokenizer loop, because the loop's
+  branches were at the edge of their range. In the loop, `ORA EOLPNTR` became a `BEQ` of the
+  same size; the token is built in the new code.
+- Run-together keywords now need a space: `FOR I` (not `FORI`), `PRINT X`, `FN F(`, `END IF`
+  (not `ENDIF`), `GOTO AGAIN`. A digit or other sign after a keyword is fine: `GOTO10`, `1TO3`.
+  `tests/block` now writes `END IF`.
+- Labels may now start with a keyword (`TOTAL:`).
+- Net: 25 bytes (CODE), image 11912 bytes. `tests/names` covers `TOTAL`, `ONE`, `ENDX`,
+  `FORMAT` and `NEXTI`.
