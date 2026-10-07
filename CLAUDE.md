@@ -10,6 +10,7 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
 - `m6502.asm` is about 50k tokens. Never read it whole; grep, then read line ranges.
 - Use `git mv` / `git rm` for tracked files.
 - Log every change to `src/` (what and why) in `docs/changes.md`, in the same commit.
+- ROM space is tight. With every change, suggest ways to save bytes (in that code or nearby).
 
 ## Tools (not on PATH)
 
@@ -39,7 +40,8 @@ test it with ca65, then extend it for new hardware with a new Unix-style KERNAL.
   (buffer at $0200, `LINE_MAX`); BS and DEL delete.
   Block `IF c THEN` / `ELSE` / `END IF` and `DO` / `LOOP` / `EXIT [DO]` (`block.s`,
   `CONFIG_BLOCK`). `INSTR([start,] a$, b$)` (`instr.s`, `CONFIG_INSTR`). `HEX$(n)`, `BIN$(n)`
-  (`hexbin.s`, `CONFIG_HEXBIN`). `UCASE$(a$)`, `LCASE$(a$)` (`casestr.s`, `CONFIG_CASE`). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). `a MOD b`
+  (`hexbin.s`, `CONFIG_HEXBIN`). `UCASE$(a$)`, `LCASE$(a$)` (`casestr.s`, `CONFIG_CASE`). `TEXTAT x,y,a$ or code[,color]`
+  (`textat.s`, `CONFIG_TEXTAT`; ANSI codes in the sim). `RPT$(a$ or code, n)` (`rpt.s`, `CONFIG_RPT`). `a MOD b`
   (`mod.s`, `CONFIG_MOD`). `$FF` hex and `%1010` binary literals (`radixlit.s`,
   `CONFIG_RADIX_LIT`). `PI` constant (`CONFIG_PI`). `XOR(a,b)`, `SHL(a,n)`, `SHR(a,n)`
   (`bitfn.s`, `CONFIG_BITFN`). `DEEK(addr)`, `DOKE addr,n` (`deek.s`, `CONFIG_DEEK`). GOTO/GOSUB

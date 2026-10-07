@@ -32,6 +32,10 @@
 .include "casestr.s"
 .endif
 
+.ifdef CONFIG_TEXTAT
+.include "textat.s"
+.endif
+
 .ifdef CONFIG_MOD
 .include "mod.s"
 .endif

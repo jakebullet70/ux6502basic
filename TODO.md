@@ -7,11 +7,10 @@ in `docs/changes.md` and gets a test in `tests/`.
 
 HEX$, BIN$, RPT$, MOD, π, and `$` and `%` literals (hex and binary). Then the `XOR`, `SHL` and
 `SHR` operators (bitwise, on integers like `AND` and `OR`). Then `DEEK(addr)` and
-`DOKE addr,value` (16-bit PEEK and POKE), and `LCASE$` and `UCASE$`. Then `CHARAT` and
-`TEXTAT` from XC-BASIC: `CHARAT x, y, code[, color]` puts one character and
-`TEXTAT x, y, text[, color]` prints text at column x, row y, without moving the cursor. They need
-the screen layout (or a cursor call) from the new kernal; the sim build has no screen, so its
-version and test are still open.
+`DOKE addr,value` (16-bit PEEK and POKE), and `LCASE$` and `UCASE$`. Then `TEXTAT` from
+XC-BASIC: `TEXTAT x, y, text or code[, color]` prints at column x, row y without moving the
+cursor (a code replaces XC-BASIC's `CHARAT`). Done for the sim with ANSI codes; the new kernal
+port must replace the ANSI part with its screen calls.
 
 Then `CONTINUE` in `FOR`/`NEXT` and `DO`/`LOOP` loops: it skips the rest of the body and goes on
 with the next pass, through the matching `NEXT` or `LOOP` (the counterpart of `EXIT DO`, in

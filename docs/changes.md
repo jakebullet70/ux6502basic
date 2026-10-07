@@ -475,3 +475,26 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Size: 54 bytes in `casestr.s`, 16 for the keywords.
 - Test: `tests/case.bas` (both directions, letters next to the ranges, empty string, nested
   calls, a program that forces garbage collection, `LIST`, errors).
+
+## TEXTAT
+
+- `CONFIG_TEXTAT` (sim only). Code in `textat.s`, included from `extra.s`. Statement
+  `TEXTAT x,y,a$[,c]` prints a$ at column x, row y (0,0 is top left) in color c, and leaves the
+  cursor and `POS()` where they were. `TEXTAT x,y,code[,c]` prints `CHR$(code)`, so one keyword
+  also covers the planned `CHARAT` (saves its table entry and a second parser).
+- The name follows `EXIT` in the statement names, so the tokens from `TAB(` on move up by one
+  (sim only; the CBM builds are unchanged).
+- A number is turned into a one-character string by calling `CHRSTR` through a 3-byte
+  `jsr CHRSTR` stub: `CHRSTR` drops one return address (it expects `UNARY`'s), so it returns to
+  the caller of the stub. The string descriptor waits on the stack while the color is parsed, as
+  in `RPT$`.
+- The sim has no screen, so the code sends ANSI codes to the current output, written byte by byte
+  through `MONCOUT` (not `OUTDO`, so `POSX` and the line width are not touched): `ESC 7` (save
+  cursor and color), `ESC[38;5;CCCm` if a color is given (xterm 256-color index), `ESC[YYY;XXXH`
+  (1-based, three digits each), the text, `ESC 8` (restore). All parsing is done before anything
+  that moves the cursor, so an error leaves at most an unmatched `ESC 7`, which shows nothing.
+  x or y = 255 sends 000, which terminals take as 1. Under `CMD` the codes go to the file. The
+  new kernal will replace the ANSI part with its own screen calls.
+- Size: 173 bytes in `textat.s`, 9 for the keyword.
+- Test: `tests/textat.bas` (string, code, color, empty string, `POS()` kept, expressions, inside
+  a loop, `LIST`, errors).

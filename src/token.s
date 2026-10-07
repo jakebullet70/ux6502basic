@@ -87,6 +87,9 @@
 		keyword_rts "LOOP", LOOP, TOKEN_LOOP
 		keyword_rts "EXIT", BLK_EXIT, TOKEN_EXIT
 .endif
+.ifdef CONFIG_TEXTAT
+		keyword_rts "TEXTAT", TEXTAT
+.endif
 
 		count_tokens
 
