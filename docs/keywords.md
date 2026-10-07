@@ -17,11 +17,11 @@ build with `ca65 -D sim msbasic.s` and `ld65 -C sim.cfg`, and compare the `.bin`
 
 | Item | Bytes |
 |---|---|
-| sim image, $C000-$EE65 (without the 12-byte sim65 header) | 11878 |
+| sim image, $C000-$EE59 (without the 12-byte sim65 header) | 11866 |
 | of which RAM variables of `handle_io.s` (`IORAM` segment) | 634 |
 | ROM space in `sim.cfg` ($C000 + $3F00) | 16128 |
-| free | 4250 |
-| new keywords (all items in "New keywords" below) | 1733 |
+| free | 4262 |
+| new keywords (all items in "New keywords" below) | 1721 |
 | speed-ups and internals (all items in "Internals" below) | 728 |
 | CBM BASIC 2 (`cbmbasic2.bin`), for comparison | 8670 |
 
@@ -35,10 +35,10 @@ Segments of the sim image:
 | VECTORS (dispatch tables) | 169 |
 | KEYWORDS (keyword names) | 324 |
 | ERROR (error messages) | 249 |
-| CODE | 7781 |
+| CODE | 7817 |
 | CHRGET | 29 |
 | INIT | 354 |
-| EXTRA (sim I/O and most of our additions) | 2338 |
+| EXTRA (sim I/O and most of our additions) | 2290 |
 | IORAM | 634 |
 
 ## Keyword table
@@ -91,7 +91,7 @@ built from existing tokens, so they need no table entries.
 | Keywords | Flag | Bytes |
 |---|---|---|
 | `IF c THEN` / `ELSE` / `END IF`, `DO` / `LOOP` / `EXIT [DO]`, `CONTINUE` | `CONFIG_BLOCK` | 306 |
-| labels: `name:` lines, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (no keyword) | `CONFIG_LABELS` | 138 |
+| labels: `name:` lines, `GOTO`/`GOSUB`/`RUN`/`RESTORE name`, names in `ON` lists (no keyword) | `CONFIG_LABELS` | 126 |
 | `TEXTAT x,y,a$ or code[,color]` (ANSI codes in the sim) | `CONFIG_TEXTAT` | 179 |
 | `INSTR([start,] a$, b$)` | `CONFIG_INSTR` | 167 |
 | `a MOD b` | `CONFIG_MOD` | 160 |
@@ -104,7 +104,7 @@ built from existing tokens, so they need no table entries.
 | `DEEK(addr)`, `DOKE addr,n` | `CONFIG_DEEK` | 80 |
 | `PEEK` keeps LINNUM, so `DOKE a,PEEK(b)` works | `CONFIG_PEEK_SAVE_LINNUM` | 12 |
 | `PI` | `CONFIG_PI` | 21 |
-| **Total** | | **1733** |
+| **Total** | | **1721** |
 
 `CONFIG_FAST_FIN` also makes number parsing faster; `CONFIG_RADIX_LIT` does not build without it.
 

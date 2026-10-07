@@ -198,6 +198,23 @@ LC721:
 ; ----------------------------------------------------------------------------
 ; "RESTORE" STATEMENT
 ; ----------------------------------------------------------------------------
+.ifdef CONFIG_LABELS
+RESTORE_STMT:			; "RESTORE" [NAME] (labels.s)
+        beq     RESTORE
+        jsr     LABEL_FIND
+        jsr     DATA		; TXTPTR past the name
+        lda     LOWTR		; DATPTR = the end of the line before
+        ldy     LOWTR+1
+        bne     L_RS1		; always: the program is not in zero page
+RESTORE:
+        lda     TXTTAB
+        ldy     TXTTAB+1
+L_RS1:
+        sec
+        sbc     #$01
+        bcs     SETDA
+        dey
+.else
 RESTORE:
         sec
         lda     TXTTAB
@@ -205,6 +222,7 @@ RESTORE:
         ldy     TXTTAB+1
         bcs     SETDA
         dey
+.endif
 SETDA:
         sta     DATPTR
         sty     DATPTR+1

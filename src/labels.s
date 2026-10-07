@@ -64,28 +64,6 @@ L_LF7:
         rts
 
 ; ----------------------------------------------------------------------------
-; A STATEMENT THAT STARTS WITH A LETTER IS AN ASSIGNMENT OR A LABEL. A LABEL
-; REACHES ":" BEFORE ANY "=" TOKEN AND ANY CHARACTER BELOW "0" ($ % ( SPACE
-; QUOTE END OF LINE). THE LABEL IS SKIPPED.
-; ----------------------------------------------------------------------------
-LABEL_SKIP:
-        ldy     #$00
-L_LS1:
-        iny
-        lda     (TXTPTR),y
-        cmp     #TOKEN_EQUAL
-        beq     L_LS2
-        cmp     #':'
-        beq     L_LS3
-        bcs     L_LS1		; letters, tokens
-        cmp     #'0'
-        bcs     L_LS1		; digits
-L_LS2:
-        jmp     LET
-L_LS3:
-        jmp     ADDON		; TXTPTR to the ":"
-
-; ----------------------------------------------------------------------------
 ; ON: SKIP ONE LINE NUMBER OR LABEL OF THE LIST, UP TO "," OR THE END
 ; ----------------------------------------------------------------------------
 LABEL_ONSKIP:
@@ -95,20 +73,3 @@ LABEL_ONSKIP:
         bne     LABEL_ONSKIP
 L_LO1:
         rts
-
-; ----------------------------------------------------------------------------
-; "RESTORE" [NAME]
-; ----------------------------------------------------------------------------
-RESTORE_STMT:
-        bne     L_RS0
-        jmp     RESTORE
-L_RS0:
-        jsr     LABEL_FIND
-        lda     LOWTR		; DATPTR = the end of the line before
-        sbc     #$01
-        ldy     LOWTR+1
-        bcs     L_RS1
-        dey
-L_RS1:
-        jsr     SETDA
-        jmp     DATA		; TXTPTR past the name

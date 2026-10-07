@@ -48,6 +48,28 @@ L28EC:
         jsr     CHRGET
         jmp     L28BE
 
+.ifdef CONFIG_LABELS
+; ----------------------------------------------------------------------------
+; A STATEMENT THAT STARTS WITH A LETTER IS AN ASSIGNMENT OR A LABEL (labels.s).
+; A LABEL REACHES ":" BEFORE ANY "=" TOKEN AND ANY CHARACTER BELOW "0" ($ % (
+; SPACE QUOTE END OF LINE). THE LABEL IS SKIPPED; AN ASSIGNMENT FALLS INTO LET.
+; ----------------------------------------------------------------------------
+L_LS3:
+        jmp     ADDON		; TXTPTR to the ":"
+LABEL_SKIP:
+        ldy     #$00
+L_LS1:
+        iny
+        lda     (TXTPTR),y
+        cmp     #TOKEN_EQUAL
+        beq     LET
+        cmp     #':'
+        beq     L_LS3
+        bcs     L_LS1		; letters, tokens
+        cmp     #'0'
+        bcs     L_LS1		; digits
+.endif
+
 ; ----------------------------------------------------------------------------
 ; "LET" STATEMENT
 ;

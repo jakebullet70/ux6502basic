@@ -591,7 +591,7 @@ late cost more than one made early. Now the address of each variable's entry is 
 - Net: 10 bytes more, image 11740 bytes. New test `tests/pos`. `arith`, `arrays`, `files`,
   `strings` and `textat` expected outputs updated: comma zones and `POS(0)` are now right.
 
-## Labels (138 bytes)
+## Labels (126 bytes)
 
 - New flag `CONFIG_LABELS` (sim build), code in `labels.s`, included from `extra.s`. A label is
   a name and a colon at the start of a line: `100 MAIN:` or `100 MAIN: PRINT X`. `GOTO name`,
@@ -615,6 +615,13 @@ late cost more than one made early. Now the address of each variable's entry is 
 - `RESTORE`: the keyword entry points to `RESTORE_STMT` (`token.s`). Without an argument it is
   the old `RESTORE` (which `CLEARC` still calls); with a name it sets `DATPTR` to the byte in
   front of the label line and skips the name.
+- Placement: `LABEL_SKIP` sits just before `LET` in `misc1.s`, so an assignment falls through
+  into `LET` (no `jmp LET`). `RESTORE_STMT` sits just before `RESTORE` in `flow1.s`: a short
+  `beq RESTORE` replaces `bne`+`jmp`, and with a name it loads `LOWTR` into A/Y and joins the
+  subtract-one code of `RESTORE`, whose start now loads `TXTTAB` the same way (under
+  `CONFIG_LABELS`; the CBM builds keep the old `RESTORE`). It calls `DATA` first to skip the
+  name, because `DATA` leaves `LOWTR` alone. These two moves saved 12 bytes over the first
+  version, which kept both routines in `labels.s`.
 - Not done: `IF c THEN name` runs the label as a statement and does nothing; write
   `THEN GOTO name`.
-- Net: 138 bytes (CODE 7, EXTRA 131), image 11878 bytes. New test `tests/labels`.
+- Net: 126 bytes (CODE 43, EXTRA 83), image 11866 bytes. New test `tests/labels`.
