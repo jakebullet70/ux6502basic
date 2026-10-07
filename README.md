@@ -97,7 +97,7 @@ git clone https://github.com/mist64/msbasic.git ref/msbasic
   the source are in `docs/README-microsoft.md`.
 - `src/`: forked from msbasic by Michael Steil and the msbasic contributors, 2-clause BSD
   (`LICENSE-msbasic`, `src/README-msbasic.md`).
-- ux6502Basic, our changes and new files: Copyright (c) 2026 Steven De George SR, MIT license
-  (`LICENSE`).
+- ux6502Basic, our changes and new files: public domain under the Unlicense (`LICENSE`).
+  Anyone may use them for any purpose, without conditions.
 
 This project is not affiliated with Microsoft or Commodore.
